@@ -1,7 +1,7 @@
 export interface IButtonType {
-    bgColor?: string;
-    ringColor?: string;
-    textColor?: string;
-    textHoverColor?: string;
-    borderColor?: string;
+    bg?: string;
+    ring?: string;
+    text?: string;
+    border?: string;
+    spacing?: string
 }

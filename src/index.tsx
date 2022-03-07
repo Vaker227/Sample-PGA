@@ -1,14 +1,13 @@
 import { ConnectedRouter } from 'connected-react-router';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import smoothscroll from 'smoothscroll-polyfill';
 import App from './App';
 import './index.css';
-import ToastProvider from './modules/toast/ToastProvier';
 import configureStore, { history } from './redux/configureStore';
-import reportWebVitals from './reportWebVitals';
 
 smoothscroll.polyfill();
 
@@ -25,11 +24,11 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <ConnectedRouter history={history}>
-          <ToastProvider>
+        <IntlProvider locale="en">
+          <ConnectedRouter history={history}>
             <App />
-          </ToastProvider>
-        </ConnectedRouter>
+          </ConnectedRouter>
+        </IntlProvider>
       </PersistGate>
     </Provider>
   </React.StrictMode>,

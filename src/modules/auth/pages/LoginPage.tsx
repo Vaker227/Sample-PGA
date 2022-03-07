@@ -12,15 +12,13 @@ import { getErrorObjectResponse } from '../../../utils';
 import { ACCESS_TOKEN_KEY } from '../../../utils/constants';
 import LoadingScreen from '../../common/components/LoadingScreen';
 import { CustomFetch } from '../../common/utils';
-import { useToast } from '../../toast/ToastProvier';
-import { getErrorToast } from '../../toast/utils';
+import { getErrorToastAction } from '../../toast/utils';
 import LoginComponent from '../components/LoginComponent';
 import { setAuthorization, setUserInfo } from '../redux/authReducer';
 
 const LoginPage = () => {
   const token = useSelector<AppState>((state) => state.profile.auth);
   const dispatch = useDispatch();
-  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const handleSubmit: SubmitHandler<ILoginParams> = async (data) => {
     setLoading(true);
@@ -28,9 +26,7 @@ const LoginPage = () => {
     setLoading(false);
     if (reponse.errors) {
       const errorObj: any = getErrorObjectResponse(reponse);
-      Object.keys(errorObj).forEach((error) =>
-        toast.pushToast(getErrorToast(errorObj[error])),
-      );
+      Object.keys(errorObj).forEach((error) => dispatch(getErrorToastAction(errorObj[error])));
 
       return;
     }

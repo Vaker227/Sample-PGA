@@ -15,12 +15,9 @@ const CheckboxSelection = (props: CheckboxSelectionProps) => {
     onChange(option);
   };
   return (
-    <div
-      className={`flex items-center  px-4 py-2 transition hover:bg-slate-100/50 `}
-      onClick={handleChange}
-    >
-      <Checkbox selected={selected} />
-      <div className="p-1">{option.label}</div>
+    <div className={`flex items-center px-4 py-2 transition hover:bg-slate-100/50 `} onClick={handleChange}>
+      <Checkbox value={selected} />
+      <div className="ml-1 p-1">{option.label}</div>
     </div>
   );
 };
@@ -43,9 +40,7 @@ function MultiSelectionCheckboxComponent(props: Props) {
     setExpand(false);
   }, []);
   const handleChange = (changingOption: SelectOption) => {
-    const index = selectedValues.findIndex(
-      (value) => value == changingOption.value,
-    );
+    const index = selectedValues.findIndex((value) => value == changingOption.value);
     if (index < 0) {
       const newArray = [...selectedValues, changingOption.value];
       onChange(newArray);
@@ -55,24 +50,41 @@ function MultiSelectionCheckboxComponent(props: Props) {
       onChange([...newArray]);
     }
   };
+  const renderOptionList = () => {
+    const rows: React.ReactNode[] = [];
+    let lastCategory: string;
+    list.forEach((option: SelectOption) => {
+      if (option.parent && lastCategory != option.parent) {
+        lastCategory = option.parent;
+        rows.push(
+          <div key={option.parent} className="p-3 pl-2 font-semibold capitalize text-gray-400">
+            {option.parent}
+          </div>,
+        );
+      }
+      const isSelected = selectedValues.includes(option.value);
+      rows.push(<CheckboxSelection key={option.value} option={option} selected={isSelected} onChange={handleChange} />);
+    });
+    return rows;
+  };
   return (
     <div
-      className="relative w-48 flex-auto cursor-pointer select-none font-semibold text-white"
+      className="relative w-full cursor-pointer select-none font-semibold text-white"
       onBlur={handleBlur}
       tabIndex={0}
     >
       <div
         className={
-          'flex items-center  rounded border py-2 px-4 shadow' +
-          ' border-[#13132b] bg-[#252547]' +
-          ' hover:border-[#13132b] hover:bg-[#1b1b38]' +
+          'flex items-center rounded border py-2 px-4 shadow' +
+          ' border-secondary bg-[#252547]' +
+          ' hover:border-secondary hover:bg-[#1b1b38]' +
           ' focus:border-[#a16eff] focus:outline-none' +
-          ' hover:focus:border-[#13132b] hover:focus:bg-[#1b1b38]'
+          ' hover:focus:border-secondary hover:focus:bg-[#1b1b38]'
         }
         onClick={handleExpand}
         style={width ? { width } : {}}
       >
-        <div className="flex-shrink">
+        <div className="mr-2">
           {selectedValues.length
             ? list
                 .filter((option) => selectedValues.includes(option.value))
@@ -81,30 +93,14 @@ function MultiSelectionCheckboxComponent(props: Props) {
             : title}
         </div>
         <i
-          className={`fa-solid fa-angle-down ml-auto transition-transform duration-300 ${
-            expand ? '' : 'rotate-180'
-          }`}
+          className={`fa-solid fa-angle-down ml-auto transition-transform duration-300 ${expand ? '' : 'rotate-180'}`}
         ></i>
       </div>
-      <div
-        className={`${
-          expand ? '' : 'hidden'
-        } absolute z-10 max-h-72 min-w-full overflow-auto bg-[#323259]`}
-      >
-        {list.map((option: SelectOption) => {
-          const isSelected = selectedValues.includes(option.value);
-          return (
-            <CheckboxSelection
-              key={option.value}
-              option={option}
-              selected={isSelected}
-              onChange={handleChange}
-            />
-          );
-        })}
+      <div className={`${expand ? '' : 'hidden'} absolute z-10 max-h-72 min-w-full overflow-auto bg-primary`}>
+        {renderOptionList()}
       </div>
     </div>
   );
 }
 
-export default MultiSelectionCheckboxComponent;
+export default React.memo(MultiSelectionCheckboxComponent);

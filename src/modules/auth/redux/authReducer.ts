@@ -20,7 +20,7 @@ const actions = { setAuthorization, setUserInfo, clearUserInfo };
 
 type Action = ActionType<typeof actions>;
 
-export default function reducer(state: AuthState = {}, action: Action) {
+export default function authReducer(state: AuthState = {}, action: Action) {
   switch (action.type) {
     case getType(setAuthorization):
       return { ...state, auth: action.data };

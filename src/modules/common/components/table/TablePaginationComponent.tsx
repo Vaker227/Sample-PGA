@@ -1,7 +1,6 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-
-import { pagination } from '../../utils';
+import { getPagingRange } from '../../utils';
+import PageSelectComponent from './PageSelectComponent';
 
 interface Props {
   pagesLength: number;
@@ -11,51 +10,38 @@ interface Props {
 
 function TablePaginationCompoent(props: Props) {
   const { pagesLength, currentPage, setPage } = props;
-  const pageNumbers = pagination(pagesLength, currentPage, 2);
-  const handleNextPage = () => {
-    if (currentPage < pagesLength) {
-      setPage(currentPage + 1);
-    }
-  };
+  const pageNumbers = getPagingRange(pagesLength, currentPage, 7);
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setPage(currentPage - 1);
     }
   };
+  const handleNextPage = () => {
+    if (currentPage < pagesLength) {
+      setPage(currentPage + 1);
+    }
+  };
   return (
-    <nav>
-      <ul className="pagination">
-        <li className={`page-item ${currentPage == 1 && 'disabled'}`}>
-          <span className="page-link" onClick={() => setPage(1)}>
-            <FormattedMessage id="paginationFirst" />
-          </span>
-        </li>
-        <li className={`page-item ${currentPage == 1 && 'disabled'}`}>
-          <span className="page-link" onClick={handlePreviousPage}>
-            &laquo;
-          </span>
-        </li>
-        {pageNumbers.map((number) => (
-          <li
-            className={`page-item ${currentPage == number && 'active'}`}
-            key={number}
-            onClick={() => setPage(number)}
-          >
-            <span className="page-link">{number}</span>
-          </li>
-        ))}
-        <li className={`page-item ${currentPage == pagesLength && 'disabled'}`}>
-          <span className="page-link" onClick={handleNextPage}>
-            &raquo;
-          </span>
-        </li>
-        <li className={`page-item ${currentPage == pagesLength && 'disabled'}`}>
-          <span className="page-link" onClick={() => setPage(pagesLength)}>
-            <FormattedMessage id="paginationLast" />
-          </span>
-        </li>
-      </ul>
-    </nav>
+    <div>
+      <div className="flex w-fit divide-x divide-secondary border border-secondary">
+        <PageSelectComponent onClick={handlePreviousPage} disabled={currentPage == 1}>
+          &laquo;
+        </PageSelectComponent>
+        {pageNumbers.map((number, index) => {
+          if (index == 0) number = 1;
+          if (index == 6) number = pagesLength;
+          const isSpeard = (index == 1 && number - 1 !== 1) || (index == 5 && number + 1 !== pagesLength);
+          return (
+            <PageSelectComponent key={number} selected={currentPage == number} onClick={() => setPage(number)}>
+              {!isSpeard ? number : '...'}
+            </PageSelectComponent>
+          );
+        })}
+        <PageSelectComponent onClick={handleNextPage} disabled={currentPage == pagesLength}>
+          &raquo;
+        </PageSelectComponent>
+      </div>
+    </div>
   );
 }
 

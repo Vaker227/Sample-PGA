@@ -11,7 +11,7 @@ const Header = () => {
     dispatch(toggleSidebarExpand());
   };
   return (
-    <div className="fixed top-0 h-[76px] w-screen bg-[#323259] shadow-lg shadow-slate-900">
+    <div className="fixed top-0 h-[76px] w-screen bg-primary shadow-lg shadow-slate-900">
       <div className="mx-7 flex h-full items-center text-white">
         <div className="flex items-center">
           <i

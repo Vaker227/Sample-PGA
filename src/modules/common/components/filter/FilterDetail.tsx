@@ -1,9 +1,11 @@
 import React from 'react';
 
-interface Props {}
+interface Props {
+  children: React.ReactNode;
+}
 
 const FilterDetail = (props: Props) => {
-  return <div>FilterDetail</div>;
+  return <>{props.children}</>;
 };
 
 export default FilterDetail;

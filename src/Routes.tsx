@@ -8,6 +8,7 @@ import Layout from './modules/nav/component/Layout';
 const HomePage = lazy(() => import('./modules/home/pages/HomePage'));
 const LoginPage = lazy(() => import('./modules/auth/pages/LoginPage'));
 const UserListPage = lazy(() => import('./modules/users/pages/UserListPage'));
+const ProductListPage = lazy(() => import('./modules/products/pages/ProductListPage'));
 
 export const Routes = () => {
   const location = useLocation();
@@ -20,10 +21,8 @@ export const Routes = () => {
           <Layout>
             <Switch>
               <ProtectedRoute exact path={ROUTES.home} component={HomePage} />
-              <ProtectedRoute
-                path={ROUTES.listUsers}
-                component={UserListPage}
-              />
+              <Route path={ROUTES.listUsers} component={UserListPage} />
+              <Route path={ROUTES.listProducts} component={ProductListPage} />
             </Switch>
           </Layout>
         </Route>

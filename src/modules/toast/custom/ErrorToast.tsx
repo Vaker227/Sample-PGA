@@ -1,11 +1,11 @@
 import React from 'react';
-import { ICustomToastProps } from '../ToastProvier';
+import { ICustomToastProps } from '../redux/toastReducer';
 
 const ErrorToast = (props: ICustomToastProps) => {
   const { message, startDelay, stopDelay, onRemove } = props;
   return (
     <div
-      className="relative rounded bg-red-100 py-5 px-9 ring-2 ring-red-500"
+      className="relative w-80 rounded bg-red-100 py-5 px-9 ring-2 ring-red-500"
       onMouseEnter={() => startDelay()}
       onMouseLeave={() => stopDelay()}
     >

@@ -10,11 +10,11 @@ function InputComponent(props: Props) {
   return (
     <input
       className={
-        ' rounded border py-2 px-4 font-semibold text-white shadow transition duration-300' +
-        ' border-[#13132b] bg-[#252547]' +
-        ' hover:border-[#13132b] hover:bg-[#1b1b38]' +
+        ' w-full rounded border py-2 px-4 font-semibold text-white shadow transition duration-300' +
+        ' border-secondary bg-[#252547]' +
+        ' hover:border-secondary hover:bg-[#1b1b38]' +
         ' focus:border-[#a16eff] focus:outline-none' +
-        ' hover:focus:border-[#13132b] hover:focus:bg-[#1b1b38]'
+        ' hover:focus:border-secondary hover:focus:bg-[#1b1b38]'
       }
       type="text"
       value={props.value}

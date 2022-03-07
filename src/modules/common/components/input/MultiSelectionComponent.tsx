@@ -14,10 +14,7 @@ const OptionSelected = (props: OptionSelectedProps) => {
   };
   return (
     <div className="my-[2px] flex w-fit items-center divide-x bg-[#a16eff] text-sm">
-      <i
-        className="fa-solid fa-xmark cursor-pointer p-[7px] hover:bg-white/30"
-        onClick={handleRemove}
-      ></i>
+      <i className="fa-solid fa-xmark cursor-pointer p-[7px] hover:bg-white/30" onClick={handleRemove}></i>
       <div className="p-1">{option.label}</div>
     </div>
   );
@@ -47,25 +44,19 @@ function MultiSelectionComponent(props: MultiSelectionProps) {
     setExpand(false);
   };
   const handleRemove = (removingOption: SelectOption) => {
-    const index = selectedValues.findIndex(
-      (value) => value == removingOption.value,
-    );
+    const index = selectedValues.findIndex((value) => value == removingOption.value);
     selectedValues.splice(index, 1);
     onChange([...selectedValues]);
   };
   return (
-    <div
-      className="relative w-48 flex-auto select-none font-semibold text-white"
-      onBlur={handleBlur}
-      tabIndex={0}
-    >
+    <div className="relative w-full select-none font-semibold text-white" onBlur={handleBlur} tabIndex={0}>
       <div
         className={
           'flex items-center rounded border py-1 px-4 shadow' +
-          ' border-[#13132b] bg-[#252547]' +
-          ' hover:border-[#13132b] hover:bg-[#1b1b38]' +
+          ' border-secondary bg-[#252547]' +
+          ' hover:border-secondary hover:bg-[#1b1b38]' +
           ' focus:border-[#a16eff] focus:outline-none' +
-          ' hover:focus:border-[#13132b] hover:focus:bg-[#1b1b38]'
+          ' hover:focus:border-secondary hover:focus:bg-[#1b1b38]'
         }
         onClick={handleExpand}
         style={width ? { width } : {}}
@@ -75,11 +66,7 @@ function MultiSelectionComponent(props: MultiSelectionProps) {
           {selectedValues.length ? (
             list.map((option) =>
               selectedValues.includes(option.value) ? (
-                <OptionSelected
-                  key={option.value}
-                  option={option}
-                  onRemove={handleRemove}
-                />
+                <OptionSelected key={option.value} option={option} onRemove={handleRemove} />
               ) : null,
             )
           ) : (
@@ -92,15 +79,9 @@ function MultiSelectionComponent(props: MultiSelectionProps) {
           }`}
         ></i>
       </div>
-      <div
-        className={`${
-          expand ? '' : 'hidden'
-        } absolute z-10 max-h-72 w-max cursor-pointer overflow-auto bg-[#323259]`}
-      >
+      <div className={`${expand ? '' : 'hidden'} absolute z-10 max-h-72 w-max cursor-pointer overflow-auto bg-primary`}>
         <div
-          className={`${
-            selectedValues.length == 0 ? 'bg-purple-800' : ''
-          } px-4 py-2 transition hover:bg-slate-100/50`}
+          className={`${selectedValues.length == 0 ? 'bg-purple-800' : ''} px-4 py-2 transition hover:bg-slate-100/50`}
           onClick={() => handleSelect({ label: title, value: '' })}
         >
           {title}
@@ -110,12 +91,8 @@ function MultiSelectionComponent(props: MultiSelectionProps) {
           return (
             <div
               key={index}
-              className={`${
-                isSelected ? 'bg-purple-800' : ''
-              } px-4 py-2 transition hover:bg-slate-100/50 `}
-              onClick={() =>
-                isSelected ? handleRemove(option) : handleSelect(option)
-              }
+              className={`${isSelected ? 'bg-purple-800' : ''} px-4 py-2 transition hover:bg-slate-100/50 `}
+              onClick={() => (isSelected ? handleRemove(option) : handleSelect(option))}
             >
               {option.label}
             </div>
@@ -126,4 +103,4 @@ function MultiSelectionComponent(props: MultiSelectionProps) {
   );
 }
 
-export default MultiSelectionComponent;
+export default React.memo(MultiSelectionComponent);

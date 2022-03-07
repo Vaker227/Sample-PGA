@@ -2,8 +2,8 @@ export type AuthToken = string
 
 export interface IUser {
   profile_id: string,
-  login: string,
-  firstName: string,
+  login?: string,
+  fistName: string,
   lastName: string,
 }
 
@@ -25,11 +25,6 @@ export interface IUserInfo extends IUser {
   wishlist: string
 }
 
-export interface IRole {
-  enabled: string,
-  id: string,
-  name: string
-}
 
 // address: "asd"
 // count: 25
@@ -46,22 +41,28 @@ export interface IRole {
 // status: ["U"]
 // types: ["5", "6"]
 // tz: 7
-type IFilterUserStatus = 'E' | 'D' | 'U'
+export type IFilterUserStatus = 'E' | 'D' | 'U' | ''
+export type IFilterUserMembership = "M_4" | "P_4"
 
-export interface IFilterUser {
+export interface IFilterUserProperties {
   address: string
-  count: number
   country: string
-  date_range: []
+  date_range: string[]
   date_type: "R" | "L"
-  memberships: string[]
-  order_by: "DESC" | "ASC"
-  page: number
+  memberships: IFilterUserMembership[]
   phone: string
   search: string
-  sort: "last_login" | "firstName" | "access_level" | 'created' | 'vendor'
   state: string
   status: IFilterUserStatus[]
   types: string[]
+}
+
+export interface IFilterUserSort {
+  sort: "last_login" | "firstName" | "access_level" | 'created' | 'vendor'
+  order_by: "DESC" | "ASC"
+  count: number
+  page: number
+}
+export interface IFilterUser extends IFilterUserProperties, IFilterUserSort {
   tz: 7
 }

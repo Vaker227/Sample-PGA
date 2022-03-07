@@ -3,10 +3,14 @@ import { createBrowserHistory } from 'history';
 import { applyMiddleware, compose, createStore } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage/session';
+import createSagaMiddleware from 'redux-saga';
 import thunk from 'redux-thunk';
 import createRootReducer from './reducer';
+import rootSaga from './sagas';
+
 
 export const history = createBrowserHistory();
+const sagaMiddleware = createSagaMiddleware()
 
 const composeEnhancers =
   (typeof window !== 'undefined' &&
@@ -33,10 +37,14 @@ export default function configureStore(preloadedState: any) {
       applyMiddleware(
         routerMiddleware(history), // for dispatching history actions
         thunk,
+        sagaMiddleware
         // ... other middlewares ...
       ),
     ),
   );
+
+  
+  sagaMiddleware.run(rootSaga)
 
   const persistor = persistStore(store);
 

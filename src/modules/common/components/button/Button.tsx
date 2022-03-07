@@ -6,17 +6,18 @@ interface Props {
   children: React.ReactNode;
   onClick?(e: React.MouseEvent<HTMLButtonElement>): void;
   disabled?: boolean;
+  bold?: boolean;
 }
 
 const Button = (props: Props) => {
-  const { variant, children, onClick, disabled } = props;
+  const { variant, children, onClick, disabled, bold } = props;
   const btnType = useMemo(() => getStyleClasses(variant || ''), [variant]);
   return (
     <button
       disabled={disabled}
-      className={`inline-block cursor-pointer rounded border-2 py-1.5 px-2 ${btnType} leading-6 focus:ring active:ring ${
+      className={`inline-block cursor-pointer rounded ${btnType} leading-6 ${
         disabled && 'pointer-events-none opacity-60'
-      }`}
+      } ${bold && 'font-semibold'} transition-colors`}
       onClick={onClick}
     >
       {children}
@@ -24,4 +25,4 @@ const Button = (props: Props) => {
   );
 };
 
-export default Button;
+export default React.memo(Button);

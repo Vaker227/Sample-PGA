@@ -6,7 +6,10 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://api.gearfocus.div4.pgtest.co',
+      target: 'https://api.gearfocus.div4.pgtest.co/',
+      pathRewrite: {
+        '/api': '',
+      },
       changeOrigin: true,
       secure: false,
       onProxyReq: function (proxyReq, req, res) {

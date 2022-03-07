@@ -1,20 +1,21 @@
 import React from 'react';
 
 interface Props {
-  selected: boolean;
+  value: boolean;
   onChange?(changeTo: boolean): void;
+  transparent?: boolean;
 }
 
 const Checkbox = (props: Props) => {
-  const { selected, onChange } = props;
+  const { value, onChange, transparent } = props;
   return (
     <div
-      className={`flex h-[18px] w-[18px] shrink-0 place-content-center rounded-sm transition-all ${
-        selected ? 'bg-purple-800' : 'bg-[#4F4F76] ring-1 ring-white'
-      } `}
-      onClick={() => onChange && onChange(!selected)}
+      className={`flex h-[18px] w-[18px] shrink-0 cursor-pointer place-content-center rounded-sm transition-all ${
+        value ? 'bg-purple-800' : 'bg-[#4F4F76] '
+      } ${transparent && 'bg-transparent'} ring-1 ring-secondary  hover:ring-gray-500 `}
+      onClick={() => onChange && onChange(!value)}
     >
-      {selected && <i className="fa-solid fa-check  text-sm"></i>}
+      {value && <i className="fa-solid fa-check  text-sm"></i>}
     </div>
   );
 };

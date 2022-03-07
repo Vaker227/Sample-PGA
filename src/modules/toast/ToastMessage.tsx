@@ -1,26 +1,29 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { IToastInfo } from './ToastProvier';
+import { useDispatch } from 'react-redux';
+import { IToastInfo, removeToast } from './redux/toastReducer';
 
 interface Props {
   toast: IToastInfo;
-  onRemove(toast: IToastInfo): void;
 }
 
 type ToastState = 'init' | 'state';
 
 const ToastMessage = (props: Props) => {
-  const { toast, onRemove } = props;
+  const { toast } = props;
+  const dispatch = useDispatch();
   const [delayFlag, setDelayFlag] = useState(false);
   const [toastState, setToastState] = useState<ToastState>('init');
 
   const handleRemove = useCallback(() => {
-    onRemove(toast), toast.duration;
-  }, [onRemove, toast]);
+    dispatch(removeToast(toast));
+  }, [dispatch, toast]);
 
+  // animation init
   useEffect(() => {
     setTimeout(() => setToastState('state'), 50);
   }, []);
 
+  // delay
   useEffect(() => {
     if (typeof toast.duration !== 'number') {
       return;
@@ -38,6 +41,7 @@ const ToastMessage = (props: Props) => {
     setDelayFlag(isDelay);
   };
 
+  // use custom template
   if (toast.template) {
     return (
       <div

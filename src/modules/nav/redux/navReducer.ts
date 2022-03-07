@@ -13,11 +13,11 @@ const actions = { setSidebarExpand, toggleSidebarExpand };
 
 type Action = ActionType<typeof actions>;
 
-const defaultNavState: NavState = {
+const navDefaultState: NavState = {
     sidebarExpand: true
 }
 
-export default function reducer(state: NavState = defaultNavState, action: Action) {
+export default function navReducer(state: NavState = navDefaultState, action: Action) {
     switch (action.type) {
         case getType(setSidebarExpand):
             return { ...state, sidebarExpand: action.value };
