@@ -83,9 +83,21 @@ const FormUserProfileComponent = (props: Props) => {
     detailForm,
   ]);
 
-  const typeOptions: SelectOption[] = useMemo(() => [{ label: 'Bussiness', value: 'business' }], []);
+  const typeOptions: SelectOption[] = useMemo(
+    () => [
+      { label: 'Bussiness', value: 'business' },
+      { label: 'Individual', value: 'individual' },
+    ],
+    [],
+  );
 
-  const accessLevelOptions: SelectOption[] = useMemo(() => [{ label: 'Admin', value: '100' }], []);
+  const accessLevelOptions: SelectOption[] = useMemo(
+    () => [
+      { label: 'Admin', value: '100' },
+      { label: 'Vendor', value: '10' },
+    ],
+    [],
+  );
   const watchAccessLevel = watch('access_level');
 
   const roleOptions: SelectOption[] = useMemo(() => {
@@ -95,10 +107,17 @@ const FormUserProfileComponent = (props: Props) => {
     return [];
   }, [roles]);
 
-  const memberShipOptions: SelectOption[] = useMemo(() => [{ label: 'General', value: '4' }], []);
+  const memberShipOptions: SelectOption[] = useMemo(
+    () => [
+      { label: 'General', value: '4' },
+      { label: 'Ignore Membership', value: '' },
+    ],
+    [],
+  );
 
   const userStatusOptions: SelectOption[] = useMemo(
     () => [
+      { label: 'Enabled', value: 'E' },
       { label: 'Disabled', value: 'D' },
       { label: 'Unapproved Vendor', value: 'U' },
     ],
@@ -261,11 +280,10 @@ const FormUserProfileComponent = (props: Props) => {
                 control={control}
                 render={({ field }) => (
                   <SelectionComponent
-                    title="Enabled"
+                    title="Status"
                     list={userStatusOptions}
                     selectedValue={field.value!}
                     onChange={field.onChange}
-                    defaultValue={'E'}
                   />
                 )}
               />
@@ -277,7 +295,7 @@ const FormUserProfileComponent = (props: Props) => {
               control={control}
               render={({ field }) => (
                 <SelectionComponent
-                  title="Ignore Membership"
+                  title="Membership"
                   list={memberShipOptions}
                   selectedValue={field.value}
                   onChange={field.onChange}

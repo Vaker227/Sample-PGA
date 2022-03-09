@@ -8,10 +8,11 @@ interface Props {
   selectedValue: string;
   width?: number;
   defaultValue?: string;
+  returnable?: boolean;
 }
 
 function SelectionComponent(props: Props) {
-  const { title, list, onChange, selectedValue, width, defaultValue } = props;
+  const { title, list, onChange, selectedValue, width, defaultValue, returnable } = props;
   const [expand, setExpand] = useState(false);
   const handleExpand = () => {
     setExpand(!expand);
@@ -52,14 +53,16 @@ function SelectionComponent(props: Props) {
       <div
         className={`${
           expand ? '' : 'hidden'
-        } absolute z-50 max-h-72 max-w-sm overflow-auto border border-secondary bg-primary`}
+        } absolute z-50 max-h-72 w-full max-w-sm overflow-auto border border-secondary bg-primary`}
       >
-        <div
-          className={`${selectedValue == '' ? 'bg-purple-800' : ''} px-4 py-2 transition hover:bg-slate-100/50`}
-          onClick={() => handleSelect({ label: title, value: defaultValue || '' })}
-        >
-          {title}
-        </div>
+        {returnable && (
+          <div
+            className={`${selectedValue == '' ? 'bg-purple-800' : ''} px-4 py-2 transition hover:bg-slate-100/50`}
+            onClick={() => handleSelect({ label: title, value: defaultValue || '' })}
+          >
+            {title}
+          </div>
+        )}
         {list.map((value: SelectOption, index) => {
           return (
             <div

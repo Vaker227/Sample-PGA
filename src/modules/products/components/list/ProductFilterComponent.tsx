@@ -32,6 +32,7 @@ const ProductFilterComponent = (props: Props) => {
 
   const stockStatusOptions: SelectOption[] = useMemo(
     () => [
+      { label: 'Any stock status', value: 'all' },
       { label: 'In stock', value: 'in' },
       { label: 'Low stock', value: 'low' },
       { label: 'SOLD', value: 'out' },
@@ -40,6 +41,7 @@ const ProductFilterComponent = (props: Props) => {
   );
   const availabilityOptions: SelectOption[] = useMemo(
     () => [
+      { label: 'Any availability status', value: 'all' },
       { label: 'Only enabled', value: '1' },
       { label: 'Only disabled', value: '0' },
     ],
@@ -87,12 +89,12 @@ const ProductFilterComponent = (props: Props) => {
               list={categoryOptions}
               selectedValue={filterProperties.category}
               onChange={handleSelectCategory}
+              returnable
             />
           </div>
           <div className="grow">
             <SelectionComponent
               title="Any stock status"
-              defaultValue="all"
               list={stockStatusOptions}
               selectedValue={filterProperties.stock_status}
               onChange={handleSelectStockStatus}

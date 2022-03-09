@@ -147,7 +147,7 @@ const UserListPage = () => {
   return (
     <div className="px-7 pt-8">
       {loading.length && <LoadingScreen />}
-      <div className="text-4xl text-white">Search for users {Date.now()}</div>
+      <div className="text-4xl text-white">Search for users </div>
       <div>
         <UsersFilterComponent filterObject={filterObject} onSearch={handleOnSearch} />
         <div className="my-8">

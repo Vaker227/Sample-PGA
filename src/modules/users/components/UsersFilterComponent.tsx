@@ -150,6 +150,7 @@ const UsersFilterComponent = (props: Props) => {
           </div>
           <div className="w-16 flex-auto">
             <SelectionComponent
+              returnable
               title="Any status"
               list={filterUserStatusOptions}
               onChange={handleChangeUserStatus}
@@ -174,6 +175,7 @@ const UsersFilterComponent = (props: Props) => {
                     title="Select country"
                     list={countryOptions}
                     onChange={handleChangeCountry}
+                    returnable
                     selectedValue={filterProperties.country}
                   />
                 </div>
