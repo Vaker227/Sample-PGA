@@ -14,7 +14,7 @@ const PowerChecbox = (props: Props) => {
       onClick={() => onChange && onChange(!value)}
     >
       <i
-        className={`fa-solid fa-power-off ${value ? 'text-green-600' : 'text-gray-400 '} group-hover:text-green-400`}
+        className={`fa-solid fa-power-off ${value ? 'text-green-500' : 'text-gray-400 '} group-hover:text-green-300`}
       ></i>
     </div>
   );

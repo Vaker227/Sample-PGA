@@ -22,16 +22,8 @@ const Dropdown = (props: Props) => {
   };
 
   return (
-    <div
-      className={`${
-        sidebarExpand ? 'pl-7' : 'pl-6'
-      } pr-3 text-sm font-semibold`}
-      onClick={() => console.log('dropdown')}
-    >
-      <div
-        className="flex cursor-pointer items-center py-3 hover:text-violet-400"
-        onClick={handleExpand}
-      >
+    <div className={`${sidebarExpand ? 'pl-7' : 'pl-6'} pr-3 text-sm font-semibold`} onClick={() => {}}>
+      <div className="flex cursor-pointer items-center py-3 hover:text-violet-400" onClick={handleExpand}>
         <div className="">{icon}</div>
         {sidebarExpand && <div className="ml-3">{label}</div>}
         <i
@@ -42,7 +34,7 @@ const Dropdown = (props: Props) => {
       </div>
       {sidebarExpand && (
         <div
-          className={`divide-y divide-black overflow-hidden transition-all duration-400  ${
+          className={`duration-400 divide-y divide-black overflow-hidden transition-all  ${
             expand ? 'max-h-screen ease-in' : 'max-h-0 ease-out'
           }`}
         >

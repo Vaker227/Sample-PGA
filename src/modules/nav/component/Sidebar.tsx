@@ -9,7 +9,6 @@ import { AppState } from '../../../redux/reducer';
 const Sidebar = () => {
   const sidebarExpand = useSelector<AppState, boolean>((state) => state.nav.sidebarExpand);
   const location = useLocation();
-  console.log(location);
   return (
     <div className={`${sidebarExpand ? 'w-64' : 'w-16'} divide-y divide-secondary bg-primary pt-3 text-white`}>
       <Dropdown label={'Catalog'} icon={<i className="fa-solid fa-tag"></i>} expand={sidebarExpand} active={false}>

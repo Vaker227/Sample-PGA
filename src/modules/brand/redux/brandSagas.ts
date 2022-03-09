@@ -18,8 +18,6 @@ export function* fetchBrandListSaga(): any {
             yield put(getErrorToastAction(getErrorMessageResponse(response) as string))
             return;
         }
-        yield put(setBrandList(response.data))
-        yield put(getSuccessToastAction("Brand fetch success"))
 
     } catch (error: any) {
         yield put(getErrorToastAction())

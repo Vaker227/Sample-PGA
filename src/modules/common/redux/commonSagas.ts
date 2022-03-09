@@ -1,10 +1,16 @@
-import { call, put, select } from "redux-saga/effects";
+import { all, call, put, select, takeEvery } from "redux-saga/effects";
+import { createAsyncAction, getType } from "typesafe-actions";
 import { API_PATHS } from "../../../configs/api";
+import { loadingProcess } from "../../../configs/loadingProcess";
+import { AppState } from '../../../redux/reducer';
 import { getErrorMessageResponse } from "../../../utils";
+import { fetchBrandListSaga } from "../../brand/redux/brandSagas";
+import { fetchCategoryListSaga } from "../../category/redux/categorySagas";
+import { fetchShippingListSaga } from "../../shipping/redux/shippingSagas";
 import { getErrorToastAction, getSuccessToastAction } from "../../toast/utils";
-import { AppState } from '../../../redux/reducer'
+import { fetchVendorListSaga } from "../../vendor/redux/vendorSagas";
 import { CustomFetch } from "../utils";
-import { setCountries, setRoles } from "./commonReducer";
+import { setCountries, turnOnLoadingOverlay, turnOffLoadingOverlay, setRoles } from "./commonReducer";
 
 
 
@@ -21,7 +27,6 @@ export function* fetchCountriesSaga(): any {
             return;
         }
         yield put(setCountries(response.data))
-        yield put(getSuccessToastAction("Countries fetch success"))
 
     } catch (error: any) {
         yield put(getErrorToastAction())
@@ -30,7 +35,7 @@ export function* fetchCountriesSaga(): any {
 
 export function* fetchRolesSaga(): any {
     const roles = yield select((state: AppState) => state.common.roles)
-    if (roles.length) {
+    if (Object.keys(roles).length) {
         return
     }
     try {
@@ -40,10 +45,36 @@ export function* fetchRolesSaga(): any {
             return;
         }
         yield put(setRoles(response.data))
-        yield put(getSuccessToastAction("Roles fetch success"))
 
     } catch (error: any) {
         yield put(getErrorToastAction())
     }
+}
+
+
+
+
+export const getCommonValues = createAsyncAction(
+    "common/getCommonValues_request",
+    "common/getCommonValues_success",
+    "common/getCommonValues_failure"
+)<undefined, string, string>()
+
+export function* getCommonValuesSaga() {
+    yield put(turnOnLoadingOverlay(loadingProcess.FetchCommonValues))
+    yield all([
+        fetchCategoryListSaga(),
+        fetchVendorListSaga(),
+        fetchBrandListSaga(),
+        fetchRolesSaga(),
+        fetchCountriesSaga(),
+        fetchShippingListSaga()
+    ])
+    yield put(turnOffLoadingOverlay(loadingProcess.FetchCommonValues))
+}
+
+
+export default function* watchCommon() {
+    yield takeEvery(getType(getCommonValues.request), getCommonValuesSaga)
 }
 

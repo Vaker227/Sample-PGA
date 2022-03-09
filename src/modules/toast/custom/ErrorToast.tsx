@@ -5,19 +5,21 @@ const ErrorToast = (props: ICustomToastProps) => {
   const { message, startDelay, stopDelay, onRemove } = props;
   return (
     <div
-      className="relative w-80 rounded bg-red-100 py-5 px-9 ring-2 ring-red-500"
+      className="relative w-80 rounded bg-[#ff3d71] p-5 hover:bg-[#FF708D]"
       onMouseEnter={() => startDelay()}
       onMouseLeave={() => stopDelay()}
     >
-      <div className="relative flex items-center ">
-        <i
-          className="fa-solid fa-circle-exclamation absolute -left-6
-         text-xl text-red-500 "
-        ></i>
-        {message}
+      <div className="flex w-full gap-x-3">
+        <div className="bg-third h-fit rounded-md py-1 px-2">
+          <i
+            className="fa-solid fa-circle-exclamation
+          text-2xl text-[#ff3d71] "
+          ></i>
+        </div>
+        <div className="text-white">{message}</div>
       </div>
       <i
-        className="fa-solid fa-xmark absolute right-2 top-0.5 cursor-pointer rounded-full text-xl hover:text-red-500"
+        className="fa-solid fa-xmark absolute right-2 top-0.5 cursor-pointer rounded-full text-xl hover:text-white"
         onClick={onRemove}
       ></i>
     </div>

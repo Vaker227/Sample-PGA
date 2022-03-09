@@ -2,16 +2,14 @@ import React from 'react';
 
 interface Props {
   value?: string;
-  onChange?(e: React.ChangeEvent<HTMLInputElement>): void;
+  onChange?(value: string): void;
   onBlur?(): void;
-  placeholder?: string;
-  hidden?: boolean;
 }
 
-function InputComponent(props: Props) {
-  const { value, onChange, placeholder, hidden, onBlur } = props;
+const TextareaComponent = (props: Props) => {
+  const { value, onChange, onBlur } = props;
   return (
-    <input
+    <textarea
       className={
         ' w-full rounded border py-2 px-4 font-semibold text-white shadow transition duration-300' +
         ' border-secondary bg-[#252547]' +
@@ -19,14 +17,11 @@ function InputComponent(props: Props) {
         ' focus:border-[#a16eff] focus:outline-none' +
         ' hover:focus:border-secondary hover:focus:bg-[#1b1b38]'
       }
-      type={hidden ? 'password' : 'text'}
-      autoComplete={'off'}
-      onBlur={onBlur}
       value={value}
-      placeholder={placeholder}
-      onChange={onChange}
-    />
+      onChange={(e) => onChange && onChange(e.target.value)}
+      onBlur={onBlur}
+    ></textarea>
   );
-}
+};
 
-export default React.memo(InputComponent);
+export default TextareaComponent;

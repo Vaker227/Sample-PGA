@@ -41,7 +41,7 @@ export interface IUserInfo extends IUser {
 // status: ["U"]
 // types: ["5", "6"]
 // tz: 7
-export type IFilterUserStatus = 'E' | 'D' | 'U' | ''
+export type IUserStatus = 'E' | 'D' | 'U' | ''
 export type IFilterUserMembership = "M_4" | "P_4"
 
 export interface IFilterUserProperties {
@@ -53,7 +53,7 @@ export interface IFilterUserProperties {
   phone: string
   search: string
   state: string
-  status: IFilterUserStatus[]
+  status: IUserStatus[]
   types: string[]
 }
 
@@ -65,4 +65,23 @@ export interface IFilterUserSort {
 }
 export interface IFilterUser extends IFilterUserProperties, IFilterUserSort {
   tz: 7
+}
+
+
+export interface IParamsUserInfo {
+  email: string
+  firstName: string
+  lastName: string
+  password?: string
+  confirm_password?: string
+  membership_id: string
+  forceChangePassword: 0 | 1
+  taxExempt: 0 | 1
+  id?: string
+  paymentRailsType?: "individual" | "business"
+  access_level: "10" | '100'
+  roles?: string[]
+  status?: IUserStatus,
+  statusComment?: string
+  pending_membership_id?: string
 }

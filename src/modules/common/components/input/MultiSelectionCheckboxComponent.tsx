@@ -75,7 +75,7 @@ function MultiSelectionCheckboxComponent(props: Props) {
     >
       <div
         className={
-          'flex items-center rounded border py-2 px-4 shadow' +
+          'flex items-center gap-x-2 rounded border py-2 px-4 shadow' +
           ' border-secondary bg-[#252547]' +
           ' hover:border-secondary hover:bg-[#1b1b38]' +
           ' focus:border-[#a16eff] focus:outline-none' +
@@ -84,7 +84,7 @@ function MultiSelectionCheckboxComponent(props: Props) {
         onClick={handleExpand}
         style={width ? { width } : {}}
       >
-        <div className="mr-2">
+        <div className="">
           {selectedValues.length
             ? list
                 .filter((option) => selectedValues.includes(option.value))

@@ -2,12 +2,10 @@ import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ICountry, IRole } from '../../../models/common';
-import { IFilterUser, IFilterUserMembership, IFilterUserProperties, IFilterUserStatus } from '../../../models/user';
+import { IFilterUser, IFilterUserMembership, IUserStatus } from '../../../models/user';
 import { SelectOption } from '../../../models/utils/input';
 import { AppState } from '../../../redux/reducer';
 import Button from '../../common/components/button/Button';
-import FilterDetail from '../../common/components/filter/FilterDetail';
-import FilterHeader from '../../common/components/filter/FilterHeader';
 import FilterWrapper from '../../common/components/filter/FilterWrapper';
 import InputComponent from '../../common/components/input/InputComponent';
 import MultiSelectionCheckboxComponent from '../../common/components/input/MultiSelectionCheckboxComponent';
@@ -84,8 +82,8 @@ const UsersFilterComponent = (props: Props) => {
     [setFilterProperties],
   );
   const handleChangeUserStatus = useCallback(
-    (value: IFilterUserStatus) => {
-      setFilterProperties((prev) => ({ ...prev, status: [value] }));
+    (value: IUserStatus) => {
+      setFilterProperties((prev) => ({ ...prev, status: value ? [value] : [] }));
     },
     [setFilterProperties],
   );
@@ -166,7 +164,7 @@ const UsersFilterComponent = (props: Props) => {
         </>
       }
       detail={
-        <FilterDetail>
+        <>
           <div className="flex flex-wrap space-y-4">
             <div className=" h-full w-full shrink-0 space-y-3 md:ml-8 md:w-2/5 lg:w-1/3">
               <div className="flex items-center justify-between">
@@ -235,7 +233,7 @@ const UsersFilterComponent = (props: Props) => {
               </div>
             </div>
           </div>
-        </FilterDetail>
+        </>
       }
     />
   );

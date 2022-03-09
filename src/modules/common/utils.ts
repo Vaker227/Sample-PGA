@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { IResponse } from "../../models/common";
 import { IButtonType } from "../../models/utils/button";
 import { ACCESS_TOKEN_KEY } from "../../utils/constants";
 
@@ -7,7 +8,7 @@ export async function CustomFetch(url: string,
     method: 'get' | 'post' | 'delete' | 'put' = 'get',
     body?: object | FormData,
     auth = true,
-    contentType?: string) {
+    contentType?: string): Promise<IResponse | any> {
     const res = await fetch(url, {
         credentials: 'include',
         method,

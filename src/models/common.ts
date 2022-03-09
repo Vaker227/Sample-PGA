@@ -1,8 +1,17 @@
+export interface IResponse {
+    data?: any
+    errors?: any
+    success?: any
+}
+
 
 export interface IRole {
     enabled: string,
     id: string,
     name: string
+}
+export interface IRoleWrapper {
+    [index: string]: IRole[]
 }
 
 

@@ -12,7 +12,7 @@ const FilterWrapper = (props: Props) => {
     <div className=" relative my-10 w-full rounded border border-secondary bg-primary ">
       <div className="mb-4 flex w-full space-x-4 p-4 pb-0">{header}</div>
       <div
-        className={`${expand ? 'max-h-[1000px] ' : 'max-h-0'} overflow-hidden transition-all duration-300
+        className={`${expand ? 'max-h-[1000px] ' : 'max-h-0 overflow-hidden'} transition-all duration-300
       `}
       >
         <div className={`border-t border-t-black p-4 `}>{detail}</div>

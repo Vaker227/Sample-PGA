@@ -30,7 +30,7 @@ const LoginPage = () => {
 
       return;
     }
-    Cookies.set(ACCESS_TOKEN_KEY, reponse.user_cookie);
+    Cookies.set(ACCESS_TOKEN_KEY, reponse.user_cookie, { expires: 7 });
     dispatch(setAuthorization(reponse.user_cookie));
     dispatch(setUserInfo(reponse.user));
     dispatch(push(ROUTES.home));

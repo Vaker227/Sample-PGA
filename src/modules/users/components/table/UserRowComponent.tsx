@@ -1,5 +1,7 @@
 import moment from 'moment';
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../../../../configs/routes';
 import { IUserInfo } from '../../../../models/user';
 import Button from '../../../common/components/button/Button';
 import Checkbox from '../../../common/components/input/Checkbox';
@@ -26,10 +28,18 @@ const UserRowComponent = (props: Props) => {
         </div>
       </td>
       <td className="truncate p-3 text-left">
-        <div>{user.vendor}</div>
+        <div>
+          <Link className="text-sky-500 hover:underline" to={ROUTES.detailUser + '/' + user.profile_id}>
+            {user.vendor}
+          </Link>
+        </div>
         <div>{user.storeName}</div>
       </td>
-      <td className="truncate p-3 text-left">{name}</td>
+      <td className="truncate p-3 text-left ">
+        <Link className="text-sky-500 hover:underline" to={ROUTES.detailUser + '/' + user.profile_id}>
+          {name}
+        </Link>
+      </td>
       <td className="truncate p-3 text-left">{user.access_level}</td>
       <td className="truncate p-3 text-left">{user.product}</td>
       <td className="truncate p-3 text-left">{user.order.order_as_buyer}</td>

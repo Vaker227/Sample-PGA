@@ -13,7 +13,6 @@ interface Props {
 function SelectionComponent(props: Props) {
   const { title, list, onChange, selectedValue, width, defaultValue } = props;
   const [expand, setExpand] = useState(false);
-
   const handleExpand = () => {
     setExpand(!expand);
   };
@@ -44,13 +43,17 @@ function SelectionComponent(props: Props) {
         style={width ? { width } : {}}
       >
         <div className="mr-2 flex-shrink truncate">
-          {selectedValue ? list.find((option) => option.value == selectedValue)?.label : title}
+          {selectedValue ? list.find((option) => option.value == selectedValue)?.label || title : title}
         </div>
         <i
           className={`fa-solid fa-angle-down ml-auto transition-transform duration-300 ${expand ? '' : 'rotate-180'}`}
         ></i>
       </div>
-      <div className={`${expand ? '' : 'hidden'} absolute z-10 max-h-72 w-max overflow-auto bg-primary`}>
+      <div
+        className={`${
+          expand ? '' : 'hidden'
+        } absolute z-50 max-h-72 max-w-sm overflow-auto border border-secondary bg-primary`}
+      >
         <div
           className={`${selectedValue == '' ? 'bg-purple-800' : ''} px-4 py-2 transition hover:bg-slate-100/50`}
           onClick={() => handleSelect({ label: title, value: defaultValue || '' })}

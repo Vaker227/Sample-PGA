@@ -6,7 +6,7 @@ import { CustomFetch } from "../../common/utils";
 import { getErrorToastAction, getSuccessToastAction } from "../../toast/utils";
 import { setCategoryList } from "./categoryReducer";
 
-export function* fetchCategoryList(): any {
+export function* fetchCategoryListSaga(): any {
     const categories = yield select((state: AppState) => state.category.list)
     if (categories.length) {
         return
@@ -18,7 +18,6 @@ export function* fetchCategoryList(): any {
             return;
         }
         yield put(setCategoryList(response.data))
-        yield put(getSuccessToastAction("Categories fetch success"))
 
     } catch (error: any) {
         yield put(getErrorToastAction())

@@ -20,10 +20,10 @@ export interface ToastState {
     list: IToastInfo[]
 }
 
-export const pushToast = createCustomAction('vendor/pushToast', (newToast: IToastInfo) => ({
+export const pushToast = createCustomAction('toast/pushToast', (newToast: IToastInfo) => ({
     newToast,
 }));
-export const removeToast = createCustomAction('vendor/removeToast', (removingToast: IToastInfo) => ({
+export const removeToast = createCustomAction('toast/removeToast', (removingToast: IToastInfo) => ({
     removingToast,
 }));
 

@@ -19,7 +19,6 @@ export function* fetchVendorListSaga(): any {
             return;
         }
         yield put(setVendorList(response.data))
-        yield put(getSuccessToastAction("Vendor fetch success"))
 
     } catch (error: any) {
         yield put(getErrorToastAction())
