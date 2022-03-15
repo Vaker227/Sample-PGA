@@ -11,6 +11,8 @@ const UserListPage = lazy(() => import('./modules/users/pages/UserListPage'));
 const UserCreatePage = lazy(() => import('./modules/users/pages/UserCreatePage'));
 const UserDetailPage = lazy(() => import('./modules/users/pages/UserDetailPage'));
 const ProductListPage = lazy(() => import('./modules/products/pages/ProductListPage'));
+const ProductCreatePage = lazy(() => import('./modules/products/pages/ProductCreatePage'));
+const ProductDetailPage = lazy(() => import('./modules/products/pages/ProductDetailPage'));
 
 export const Routes = () => {
   const location = useLocation();
@@ -27,6 +29,8 @@ export const Routes = () => {
               <ProtectedRoute path={ROUTES.detailUser + '/:id'} component={UserDetailPage} />
               <ProtectedRoute path={ROUTES.createUser} component={UserCreatePage} />
               <ProtectedRoute path={ROUTES.listProducts} component={ProductListPage} />
+              <ProtectedRoute path={ROUTES.createProduct} component={ProductCreatePage} />
+              <ProtectedRoute path={ROUTES.detailProduct + '/:id'} component={ProductDetailPage} />
             </Switch>
           </Layout>
         </Route>

@@ -1,10 +1,10 @@
 import { call, put, select } from "redux-saga/effects";
 import { API_PATHS } from "../../../configs/api";
-import { CustomFetch } from "../../common/utils";
-import { getErrorMessageResponse } from '../../../utils/index'
-import { getErrorToastAction, getSuccessToastAction } from "../../toast/utils";
-import { setShippingList } from "./shippingReducer";
 import { AppState } from "../../../redux/reducer";
+import { getErrorMessageResponse } from '../../../utils/index';
+import { CustomFetch } from "../../common/utils";
+import { getErrorToastAction } from "../../toast/utils";
+import { setShippingList } from "./shippingReducer";
 
 
 
@@ -20,7 +20,6 @@ export function* fetchShippingListSaga(): any {
             return;
         }
         yield put(setShippingList(response.data))
-        yield put(getSuccessToastAction("Shipping fetch success"))
 
     } catch (error: any) {
         yield put(getErrorToastAction())

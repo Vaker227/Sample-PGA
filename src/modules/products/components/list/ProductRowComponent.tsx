@@ -2,8 +2,10 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { FormattedNumber } from 'react-intl';
 import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { API_PATHS } from '../../../../configs/api';
 import { loadingProcess } from '../../../../configs/loadingProcess';
+import { ROUTES } from '../../../../configs/routes';
 import { IProduct } from '../../../../models/product';
 import Backdrop from '../../../common/components/Backdrop';
 import Button from '../../../common/components/button/Button';
@@ -53,8 +55,16 @@ const ProductRowComponent = (props: Props) => {
             </div>
           </div>
         </td>
-        <td className="truncate p-3 text-left">{Date.now()}</td>
-        <td className="truncate p-3 text-left">{product.name}</td>
+        <td className="truncate p-3 text-left">
+          <Link className="text-sky-500 hover:underline" to={ROUTES.detailProduct + '/' + product.id}>
+            {product.sku}
+          </Link>
+        </td>
+        <td className="truncate p-3 text-left">
+          <Link className="text-sky-500 hover:underline" to={ROUTES.detailProduct + '/' + product.id}>
+            {product.name}
+          </Link>
+        </td>
         <td className="truncate p-3 text-left">{product.category}</td>
         <td className="truncate p-3 text-left">
           <FormattedNumber value={product.price as number} style="currency" currency="USD" />

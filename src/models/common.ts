@@ -15,6 +15,11 @@ export interface IRoleWrapper {
 }
 
 
+export interface ICondition {
+    id: string | null
+    name: string
+}
+
 export interface ICountry {
     active_currency: any
     code: string,

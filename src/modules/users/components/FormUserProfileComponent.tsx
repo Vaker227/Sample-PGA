@@ -38,6 +38,12 @@ const FormUserProfileComponent = (props: Props) => {
   });
 
   useEffect(() => {
+    // check error
+    if (errors.firstName || errors.lastName || errors.email || errors.password || errors.confirm_password) {
+      onSubmitable(false);
+      return;
+    }
+
     // for update
     if (detailForm) {
       if (Object.keys(dirtyFields).length) {
@@ -50,21 +56,16 @@ const FormUserProfileComponent = (props: Props) => {
     // for create
     // check dirtyFields for case when user input all valid in first try
     if (
-      dirtyFields.firstName &&
-      dirtyFields.lastName &&
-      dirtyFields.email &&
-      !errors.firstName &&
-      !errors.lastName &&
-      !errors.email &&
-      dirtyFields.password &&
-      dirtyFields.confirm_password &&
-      !errors.password &&
-      !errors.confirm_password
+      !dirtyFields.firstName ||
+      !dirtyFields.lastName ||
+      !dirtyFields.email ||
+      !dirtyFields.password ||
+      !dirtyFields.confirm_password
     ) {
-      onSubmitable(true);
+      onSubmitable(false);
       return;
     }
-    onSubmitable(false);
+    onSubmitable(true);
   }, [
     dirtyFields.firstName,
     dirtyFields.lastName,
@@ -260,18 +261,15 @@ const FormUserProfileComponent = (props: Props) => {
             </InputFormLayout>
           )}
           {detailForm && (
-            <div className="flex w-full flex-wrap gap-x-5 gap-y-3 md:flex-nowrap">
-              <div className={`w-full pt-[6px] after:ml-1 md:w-2/6 md:text-right`}>Status comment (reason)</div>
-              <div className="w-full md:w-3/6">
-                <Controller
-                  name={'statusComment'}
-                  control={control}
-                  render={({ field }) => (
-                    <TextareaComponent onChange={field.onChange} value={field.value} onBlur={field.onBlur} />
-                  )}
-                />
-              </div>
-            </div>
+            <InputFormLayout title="Status comment (reason)" lg>
+              <Controller
+                name={'statusComment'}
+                control={control}
+                render={({ field }) => (
+                  <TextareaComponent onChange={field.onChange} value={field.value} onBlur={field.onBlur} />
+                )}
+              />
+            </InputFormLayout>
           )}
           {detailForm && (
             <InputFormLayout title="Account status" required>
@@ -295,7 +293,7 @@ const FormUserProfileComponent = (props: Props) => {
               control={control}
               render={({ field }) => (
                 <SelectionComponent
-                  title="Membership"
+                  title="Ignore Membership"
                   list={memberShipOptions}
                   selectedValue={field.value}
                   onChange={field.onChange}

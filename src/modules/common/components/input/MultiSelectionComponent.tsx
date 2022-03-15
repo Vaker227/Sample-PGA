@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SelectOption } from '../../../../models/utils/input';
+import useSelectIndex from './useSelectIndex';
 
 interface OptionSelectedProps {
   option: SelectOption;
@@ -26,22 +27,44 @@ interface MultiSelectionProps {
   selectedValues: string[];
   onChange(values: string[]): void;
   width?: number;
+  onBlur?(): void;
 }
 
 function MultiSelectionComponent(props: MultiSelectionProps) {
-  const { title, list, selectedValues, width, onChange } = props;
-  const [expand, setExpand] = useState(false);
+  const { title, list, selectedValues, width, onChange, onBlur } = props;
+  const [filteredList, setFilterdList] = useState<SelectOption[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [text, setText] = useState('');
+  const [focusing, setFocusing] = useState(false);
+  useEffect(() => {
+    if (focusing) {
+      setFilterdList(list.filter((option) => option.label.toLowerCase().includes(text.toLowerCase())));
+    }
+  }, [list, text]); // eslint-disable-line
 
-  const handleExpand = () => {
-    setExpand(!expand);
-  };
+  const { focusingElement, wrapperElement, focusIndex, handleSelectByKeyBoard } = useSelectIndex(
+    0,
+    0,
+    filteredList.length - 1,
+  );
+
+  const handleFocus = useCallback(() => {
+    setFocusing(true);
+    setFilterdList(list.filter((option) => option.label.toLowerCase().includes(text.toLowerCase())));
+  }, [list, text]);
+
   const handleBlur = useCallback(() => {
-    setExpand(false);
-  }, []);
+    setFocusing(false);
+    onBlur && onBlur();
+  }, [onBlur]);
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    handleSelectByKeyBoard(e);
+  }, []); // eslint-disable-line
   const handleSelect = (selection: SelectOption) => {
+    console.log([...selectedValues, selection.value]);
     onChange([...selectedValues, selection.value]);
-    setExpand(false);
+    inputRef.current?.focus();
   };
   const handleRemove = (removingOption: SelectOption) => {
     const index = selectedValues.findIndex((value) => value == removingOption.value);
@@ -49,16 +72,17 @@ function MultiSelectionComponent(props: MultiSelectionProps) {
     onChange([...selectedValues]);
   };
   return (
-    <div className="relative w-full select-none font-semibold text-white" onBlur={handleBlur} tabIndex={0}>
+    <div className="relative w-full select-none font-semibold text-white" tabIndex={0}>
+      {focusing && <div className="fixed top-0 left-0 h-screen w-screen" onClick={handleBlur}></div>}
       <div
         className={
-          'flex items-center rounded border py-1 px-4 shadow' +
+          'flex min-h-[42px] items-center rounded border py-1 px-4 shadow' +
           ' border-secondary bg-[#252547]' +
           ' hover:border-secondary hover:bg-[#1b1b38]' +
           ' focus:border-[#a16eff] focus:outline-none' +
           ' hover:focus:border-secondary hover:focus:bg-[#1b1b38]'
         }
-        onClick={handleExpand}
+        onClick={() => inputRef.current?.focus()}
         style={width ? { width } : {}}
       >
         {/* title  */}
@@ -72,26 +96,35 @@ function MultiSelectionComponent(props: MultiSelectionProps) {
           ) : (
             <span className="p-1">{title}</span>
           )}
+          <input
+            ref={inputRef}
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="bg-transparent font-semibold outline-none"
+            onFocus={handleFocus}
+            onKeyDown={handleKeyDown}
+          />
         </div>
         <i
           className={`fa-solid fa-angle-down ml-auto shrink-0 cursor-pointer transition-transform duration-300 ${
-            expand ? '' : 'rotate-180'
+            focusing ? '' : 'rotate-180'
           }`}
         ></i>
       </div>
-      <div className={`${expand ? '' : 'hidden'} absolute z-10 max-h-72 w-max cursor-pointer overflow-auto bg-primary`}>
-        <div
-          className={`${selectedValues.length == 0 ? 'bg-purple-800' : ''} px-4 py-2 transition hover:bg-slate-100/50`}
-          onClick={() => handleSelect({ label: title, value: '' })}
-        >
-          {title}
-        </div>
-        {list.map((option: SelectOption, index) => {
+      <div
+        ref={wrapperElement}
+        className={`${focusing ? '' : 'hidden'} absolute z-10 max-h-72 w-full cursor-pointer overflow-auto bg-primary`}
+      >
+        {filteredList.map((option: SelectOption, index) => {
           const isSelected = selectedValues.includes(option.value);
           return (
             <div
               key={index}
-              className={`${isSelected ? 'bg-purple-800' : ''} px-4 py-2 transition hover:bg-slate-100/50 `}
+              ref={focusIndex == index ? focusingElement : undefined}
+              className={`${
+                isSelected ? 'bg-purple-800' : focusIndex == index ? 'bg-slate-100/50' : ''
+              } px-4 py-2 transition hover:bg-slate-100/50 `}
               onClick={() => (isSelected ? handleRemove(option) : handleSelect(option))}
             >
               {option.label}

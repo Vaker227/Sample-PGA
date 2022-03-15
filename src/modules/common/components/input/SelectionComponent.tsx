@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import { SelectOption } from '../../../../models/utils/input';
+import useSelectIndex from './useSelectIndex';
 
 interface Props {
   title: string;
   list: SelectOption[];
   onChange(value: string): void;
+  onBlur?(): void;
   selectedValue: string;
   width?: number;
   defaultValue?: string;
@@ -12,29 +14,43 @@ interface Props {
 }
 
 function SelectionComponent(props: Props) {
-  const { title, list, onChange, selectedValue, width, defaultValue, returnable } = props;
+  const { title, list, onChange, selectedValue, width, defaultValue, returnable, onBlur } = props;
   const [expand, setExpand] = useState(false);
+
   const handleExpand = () => {
     setExpand(!expand);
   };
+
   const handleBlur = useCallback(() => {
     setExpand(false);
-  }, []);
+    onBlur && onBlur();
+  }, [onBlur]);
 
-  const handleSelect = (selection: SelectOption) => {
-    onChange(selection.value);
+  const handleSelect = (selection: SelectOption, index: number) => {
+    setFocusIndex(index);
     setExpand(false);
+    onChange(selection.value);
+  };
+
+  const { focusingElement, wrapperElement, focusIndex, setFocusIndex, handleSelectByKeyBoard } = useSelectIndex(
+    0,
+    returnable ? -1 : 0,
+    list.length - 1,
+  );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (expand) {
+      handleSelectByKeyBoard(e);
+    }
   };
 
   return (
-    <div
-      className="relative w-full cursor-pointer select-none font-semibold text-white"
-      onBlur={handleBlur}
-      tabIndex={0}
-    >
+    <div className="relative w-full select-none font-semibold text-white" tabIndex={0} onKeyDown={handleKeyDown}>
+      {expand && <div className="fixed top-0 left-0 h-screen w-screen " onClick={handleBlur}></div>}
       <div
         className={
-          'flex items-center  rounded border py-2 px-4 shadow' +
+          'flex cursor-pointer  items-center rounded border py-2 px-4 shadow' +
           ' border-secondary bg-[#252547]' +
           ' hover:border-secondary hover:bg-[#1b1b38]' +
           ' focus:border-[#a16eff] focus:outline-none' +
@@ -51,28 +67,33 @@ function SelectionComponent(props: Props) {
         ></i>
       </div>
       <div
+        ref={wrapperElement}
         className={`${
           expand ? '' : 'hidden'
         } absolute z-50 max-h-72 w-full max-w-sm overflow-auto border border-secondary bg-primary`}
       >
         {returnable && (
           <div
-            className={`${selectedValue == '' ? 'bg-purple-800' : ''} px-4 py-2 transition hover:bg-slate-100/50`}
-            onClick={() => handleSelect({ label: title, value: defaultValue || '' })}
+            ref={focusIndex == -1 ? focusingElement : undefined}
+            className={`${
+              selectedValue == '' ? 'bg-purple-800' : focusIndex == -1 ? 'bg-slate-100/50' : ''
+            } cursor-pointer px-4 py-2 transition hover:bg-slate-100/50`}
+            onClick={() => handleSelect({ label: title, value: defaultValue || '' }, -1)}
           >
             {title}
           </div>
         )}
-        {list.map((value: SelectOption, index) => {
+        {list.map((option: SelectOption, index) => {
           return (
             <div
-              key={index}
-              className={`${
-                value.value == selectedValue ? 'bg-purple-800' : ''
-              } px-4 py-2 transition hover:bg-slate-100/50 `}
-              onClick={() => handleSelect(value)}
+              key={option.value || option.label}
+              ref={focusIndex == index ? focusingElement : undefined}
+              className={` ${
+                option.value == selectedValue ? 'bg-purple-800' : focusIndex == index ? 'bg-slate-100/50' : ''
+              }  cursor-pointer px-4 py-2 transition hover:bg-slate-100/50`}
+              onClick={() => handleSelect(option, index)}
             >
-              {value.label}
+              {option.label}
             </div>
           );
         })}

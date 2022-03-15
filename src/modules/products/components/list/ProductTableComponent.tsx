@@ -14,9 +14,9 @@ interface Props {
   list: IProduct[];
   total: number;
   onSettingsChange(filter: Partial<IFilterProduct>): void;
-  onSelectRemove(productId: IProduct['id']): void;
+  onSelectRemove: React.Dispatch<React.SetStateAction<(string | undefined)[]>>;
   selectedRemovingProducts: IProduct['id'][];
-  onSelectExport(productId: IProduct['id']): void;
+  onSelectExport: React.Dispatch<React.SetStateAction<(string | undefined)[]>>;
   selectedExportintProducts: IProduct['id'][];
   forceReload(): void;
 }
@@ -36,13 +36,43 @@ const ProductTableComponent = (props: Props) => {
   const dispatch = useDispatch();
   const pagesLength = useMemo(() => Math.ceil(total / filter.count), [filter.count, total]);
 
+  const handleSelectRemove = useCallback(
+    (productId: IProduct['id']) => {
+      onSelectRemove((prev) => {
+        const newArr = prev.slice(0);
+        const index = prev.indexOf(productId);
+        index < 0 ? newArr.push(productId) : newArr.splice(index, 1);
+        return newArr;
+      });
+    },
+    [onSelectRemove],
+  );
+
+  const handleSelectExport = useCallback(
+    (productId: IProduct['id']) => {
+      onSelectExport((prev) => {
+        const newArr = prev.slice(0);
+        const index = prev.indexOf(productId);
+        index < 0 ? newArr.push(productId) : newArr.splice(index, 1);
+        return newArr;
+      });
+    },
+    [onSelectExport],
+  );
+
+  const handleSelectAllExport = useCallback(
+    (changeTo: boolean) => {
+      onSelectExport(changeTo ? list.map((product) => product.id) : []);
+    },
+    [list, onSelectExport],
+  );
+
   const handleSort = useCallback(
     (sort: any, changeTo: 'DESC' | 'ASC') => {
       onSettingsChange({ sort, order_by: changeTo });
     },
     [onSettingsChange],
   );
-
   const handleSelectCount = useCallback(
     (count: number) => {
       onSettingsChange({ count, page: 1 });
@@ -57,9 +87,7 @@ const ProductTableComponent = (props: Props) => {
   );
 
   useEffect(() => {
-    if (list.length) {
-      dispatch(turnOffLoadingOverlay(loadingProcess.LoadingProductList));
-    }
+    dispatch(turnOffLoadingOverlay(loadingProcess.LoadingProductList));
   }, [list, dispatch]);
   return (
     <div className="mb-14 border-secondary bg-primary p-4 text-white">
@@ -67,7 +95,7 @@ const ProductTableComponent = (props: Props) => {
         <thead>
           <tr className="border-b border-b-secondary text-left">
             <th className="flex min-w-[100px] p-3">
-              <Checkbox value={false} onChange={() => {}} />
+              <Checkbox value={selectedExportintProducts.length == list.length} onChange={handleSelectAllExport} />
             </th>
             <th className="min-w-[100px] p-3 ">
               <TableHeadSort label="SKU" type="sku" orderBy={filter.order_by} sort={filter.sort} onClick={handleSort} />
@@ -119,9 +147,9 @@ const ProductTableComponent = (props: Props) => {
               forceReload={forceReload}
               key={product.id}
               product={product}
-              onSelectRemove={onSelectRemove}
+              onSelectRemove={handleSelectRemove}
               selectedRemoving={selectedRemovingProducts.includes(product.id)}
-              onSelectExport={onSelectExport}
+              onSelectExport={handleSelectExport}
               selectedExporting={selectedExportintProducts.includes(product.id)}
             />
           ))}

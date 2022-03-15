@@ -3,7 +3,7 @@ import { API_PATHS } from "../../../configs/api";
 import { AppState } from "../../../redux/reducer";
 import { getErrorMessageResponse } from "../../../utils";
 import { CustomFetch } from "../../common/utils";
-import { getErrorToastAction, getSuccessToastAction } from "../../toast/utils";
+import { getErrorToastAction } from "../../toast/utils";
 import { setVendorList } from "./vendorReducer";
 
 

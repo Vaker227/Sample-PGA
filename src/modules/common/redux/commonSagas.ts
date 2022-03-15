@@ -7,10 +7,10 @@ import { getErrorMessageResponse } from "../../../utils";
 import { fetchBrandListSaga } from "../../brand/redux/brandSagas";
 import { fetchCategoryListSaga } from "../../category/redux/categorySagas";
 import { fetchShippingListSaga } from "../../shipping/redux/shippingSagas";
-import { getErrorToastAction, getSuccessToastAction } from "../../toast/utils";
+import { getErrorToastAction } from "../../toast/utils";
 import { fetchVendorListSaga } from "../../vendor/redux/vendorSagas";
 import { CustomFetch } from "../utils";
-import { setCountries, turnOnLoadingOverlay, turnOffLoadingOverlay, setRoles } from "./commonReducer";
+import { setConditions, setCountries, setRoles, turnOffLoadingOverlay, turnOnLoadingOverlay } from "./commonReducer";
 
 
 
@@ -44,7 +44,25 @@ export function* fetchRolesSaga(): any {
             yield put(getErrorToastAction(getErrorMessageResponse(response) as string))
             return;
         }
-        yield put(setRoles(response.data))
+        yield put(setRoles(response.data || []))
+
+    } catch (error: any) {
+        yield put(getErrorToastAction())
+    }
+}
+
+export function* fetchConditionsSaga(): any {
+    const roles = yield select((state: AppState) => state.common.roles)
+    if (Object.keys(roles).length) {
+        return
+    }
+    try {
+        const response = yield call(CustomFetch, API_PATHS.getConditions)
+        if (response.errors) {
+            yield put(getErrorToastAction(getErrorMessageResponse(response) as string))
+            return;
+        }
+        yield put(setConditions(response.data || []))
 
     } catch (error: any) {
         yield put(getErrorToastAction())
@@ -68,7 +86,8 @@ export function* getCommonValuesSaga() {
         fetchBrandListSaga(),
         fetchRolesSaga(),
         fetchCountriesSaga(),
-        fetchShippingListSaga()
+        fetchShippingListSaga(),
+        fetchConditionsSaga()
     ])
     yield put(turnOffLoadingOverlay(loadingProcess.FetchCommonValues))
 }

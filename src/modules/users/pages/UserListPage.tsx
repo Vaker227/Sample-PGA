@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
 import { ROUTES } from '../../../configs/routes';
@@ -20,10 +20,10 @@ import UsersFilterComponent from '../components/UsersFilterComponent';
 
 const UserListPage = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
   const loading = useSelector<AppState, loadingProcess[]>((state) => state.common.loading);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [recordsTotal, setRecordsTotal] = useState(0);
+  const [selectedUsers, setSelectedUser] = useState<IUserInfo['profile_id'][]>([]);
   const [userList, setUserList] = useState<IUserInfo[]>([]);
   const [filterObject, setFilterObject] = useState<IFilterUser>({
     address: '',
@@ -43,7 +43,6 @@ const UserListPage = () => {
     tz: 7,
   });
 
-  const [selectedUsers, setSelectedUser] = useState<IUserInfo['profile_id'][]>([]);
 
   useEffect(() => {
     dispatch(getCommonValues.request());
@@ -78,26 +77,6 @@ const UserListPage = () => {
   useEffect(() => {
     handleFetchUser(filterObject);
   }, [filterObject, handleFetchUser]);
-
-  const handleSelectRow = useCallback((userId: IUserInfo['profile_id']) => {
-    setSelectedUser((prev) => {
-      const newSelectedUsers = prev.slice();
-      const index = prev.indexOf(userId);
-      if (index < 0) {
-        newSelectedUsers.push(userId);
-      } else {
-        newSelectedUsers.splice(index, 1);
-      }
-      return newSelectedUsers;
-    });
-  }, []);
-
-  const handleSeletAllRows = useCallback(
-    (changeTo: boolean) => {
-      setSelectedUser(changeTo ? userList.map((user) => user.profile_id) : []);
-    },
-    [userList],
-  );
 
   const toolBarElement = useMemo(
     () => (
@@ -142,7 +121,7 @@ const UserListPage = () => {
         </div>
       </Backdrop>
     );
-  }, [showRemoveModal]);
+  }, [showRemoveModal]); // eslint-disable-line
 
   return (
     <div className="px-7 pt-8">
@@ -151,8 +130,8 @@ const UserListPage = () => {
       <div>
         <UsersFilterComponent filterObject={filterObject} onSearch={handleOnSearch} />
         <div className="my-8">
-          <Button variant="purple" onClick={() => history.push(ROUTES.createUser)}>
-            Add User
+          <Button variant="purple">
+            <Link to={ROUTES.createUser}>Add User</Link>
           </Button>
         </div>
         <UsersTableComponent
@@ -160,8 +139,7 @@ const UserListPage = () => {
           filter={filterObject}
           selectedUsers={selectedUsers}
           total={recordsTotal}
-          onSelectRow={handleSelectRow}
-          onSelectAllRows={handleSeletAllRows}
+          onSelectRow={setSelectedUser}
           onSettingsChange={handleSettingsChange}
         />
       </div>

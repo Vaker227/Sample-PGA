@@ -1,5 +1,5 @@
 import { ActionType, createCustomAction, getType } from 'typesafe-actions';
-import { ICategory } from '../../../models/products';
+import { ICategory } from '../../../models/category';
 
 export interface CategoryState {
     list: ICategory[]

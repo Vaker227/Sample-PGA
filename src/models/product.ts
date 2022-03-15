@@ -1,3 +1,7 @@
+import { IBrand } from "./brand"
+import { ICategory } from "./category"
+import { ICountry } from "./common"
+import { IShipping, IShippingParams } from "./shipping"
 
 
 
@@ -10,7 +14,7 @@ export interface IProduct {
     created: string
     description: string
     enabled: string
-    id: string
+    id?: string
     name: string
     participateSale: string
     price: string | number
@@ -46,4 +50,61 @@ export interface IFilterProduct {
     count: number;
     order_by: 'ASC' | 'DESC'
     page: number
+}
+
+export interface IImageInfo {
+    id: string | 'new'
+    file: string
+    thumbs?: string[]
+    url?: string
+}
+
+export interface IParamsUploadImage {
+    productId: number,
+    order: number,
+    images: any
+}
+
+export interface IParamsProduct {
+    vendor_id: string
+    name: string
+    brand_id: IBrand['id']
+    condition_id: string
+    categories: ICategory['id'][] | { category_id: string | number, name: string }[],
+    description: string
+    sort_description?: string
+    enabled: '1' | '0'
+    memberships: []
+    shipping_to_zones?: IShippingParams[]
+    shipping?: IShippingParams[]
+    taxExempt?: 0 | 1 | '0' | '1'
+    tax_exempt: 0 | 1 | '0' | '1'
+    price: number | string
+    sale_price_type: string
+    arrival_date: Date | string
+    inventory_tracking: number | string
+    quentity?: number
+    quantity: number | string
+    sku: string
+    participate_sale: number | string
+    sale_price: number | string
+    og_tags_types?: string
+    og_tags_type: '0' | '1' // 0:auto, 1: cutsom 
+    og_tags: string
+    enableOffers?: string
+    mininum_offer_price?: number
+    meta_desc_type: 'C' | 'A'
+    meta_description: string
+    meta_keywords: string
+    product_page_title: string
+    facebook_marketing_enabled: 1 | 0 | '1' | '0'
+    google_feed_enabled: 1 | 0 | '1' | '0'
+    imagesInfo?: IImageInfo[]
+    imagesOrder?: string[]
+    images?: IImageInfo[]
+    id?: string
+    deleted_images?: string[]
+    code?: string
+    weight?: number | string
+    cleanURL?: string
 }

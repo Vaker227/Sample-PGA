@@ -1,10 +1,10 @@
-import { goBack, replace } from 'connected-react-router';
+import { goBack } from 'connected-react-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
-import { IParamsUserInfo, IUserInfo } from '../../../models/user';
+import { IParamsUserInfo } from '../../../models/user';
 import { AppState } from '../../../redux/reducer';
 import BackButton from '../../common/components/button/BackButton';
 import Button from '../../common/components/button/Button';
@@ -15,9 +15,7 @@ import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormUserProfileComponent from '../components/FormUserProfileComponent';
 
-interface Props {}
-
-const UserDetailPage = (props: Props) => {
+const UserDetailPage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const loading = useSelector<AppState, loadingProcess[]>((state) => state.common.loading);
@@ -76,7 +74,7 @@ const UserDetailPage = (props: Props) => {
         <BackButton onClick={() => history.goBack()} />
       </div>
       <div className="mx-10 text-3xl font-semibold">Detail Profile</div>
-      <div className='min-h-screen'>
+      <div className="min-h-screen">
         {userInfo && (
           <FormUserProfileComponent
             userInfo={userInfo}

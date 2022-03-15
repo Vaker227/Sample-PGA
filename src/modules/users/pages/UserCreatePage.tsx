@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 import { API_PATHS } from '../../../configs/api';
@@ -19,14 +19,15 @@ const UserCreatePage = () => {
 
   const handleCreateUser = useCallback(
     async (userInfo: IParamsUserInfo) => {
+      console.log(userInfo);
       const response = await CustomFetch(API_PATHS.createUser, 'post', userInfo);
       console.log(response);
-      if (response.errors) {
+      if (response.errors || !response.success) {
         dispatch(getErrorToastAction(response.errors));
         return;
       }
-      dispatch(getSuccessToastAction(response.success));
-      history.push(ROUTES.listUsers);
+      dispatch(getSuccessToastAction('Created user'));
+      history.push(ROUTES.detailUser + '/' + response.data.info.profile_id);
     },
     [dispatch, history],
   );

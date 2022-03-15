@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface Props {
   value: boolean;
@@ -9,14 +9,22 @@ interface Props {
 
 const Checkbox = (props: Props) => {
   const { value, onChange, transparent, white } = props;
+  const checkBg = useMemo(
+    () => (transparent ? 'bg-transparent' : white ? 'bg-[#005CC8]' : 'bg-purple-800'),
+    [transparent, white],
+  );
+  const uncheckBg = useMemo(
+    () => (transparent ? 'bg-transparent' : white ? 'bg-white' : 'bg-[#4F4F76]'),
+    [transparent, white],
+  );
   return (
     <div
       className={`flex h-[18px] w-[18px] shrink-0 cursor-pointer place-content-center rounded-sm transition-all ${
-        value ? 'bg-purple-800' : 'bg-[#4F4F76] '
-      } ${transparent && 'bg-transparent'} ${white && 'bg-white'} ring-1 ring-secondary  hover:ring-gray-500 `}
+        value ? checkBg : uncheckBg
+      } ring-1 ring-secondary  hover:ring-gray-500 `}
       onClick={() => onChange && onChange(!value)}
     >
-      {value && <i className="fa-solid fa-check  text-sm"></i>}
+      {value && <i className={`fa-solid fa-check text-sm `}></i>}
     </div>
   );
 };

@@ -1,0 +1,100 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { SelectOption } from '../../../../models/utils/input';
+
+interface Props {
+  list: SelectOption[];
+  onChangeText(text: string): void;
+  onSelect(value: string): void;
+  placeholder?: string;
+  onBlur?(): void;
+  defaultText?: string;
+}
+
+const SuggestiveInput = (props: Props) => {
+  const { list, onChangeText, onSelect, placeholder, onBlur, defaultText } = props;
+  const [text, setText] = useState(defaultText);
+  const [expand, setExpand] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [inputDebounce, setInputDebounce] = useState<NodeJS.Timeout>();
+
+  const handleChangeText = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const pattern = e.target.value;
+      setText(pattern);
+      setExpand(false);
+      setLoading(pattern !== '');
+      if (inputDebounce) clearTimeout(inputDebounce);
+      setInputDebounce(
+        setTimeout(() => {
+          if (pattern == '') return;
+          setSearching(true);
+          onChangeText(pattern);
+        }, 1000),
+      );
+    },
+    [onChangeText, inputDebounce],
+  );
+
+  const handleSelect = useCallback(
+    (option: SelectOption) => {
+      onSelect(option.value);
+      setText(option.label);
+      setExpand(false);
+    },
+    [onSelect],
+  );
+
+  const handleBlur = useCallback(() => {
+    onSelect('');
+    setExpand(false);
+    onBlur && onBlur();
+  }, [onSelect, onBlur]);
+
+  useEffect(() => {
+    if (searching) {
+      setLoading(false);
+      setExpand(true);
+      setSearching(false);
+    }
+  }, [list]);
+  return (
+    <div className="relative">
+      {expand && <div className="fixed top-0 left-0 h-screen w-screen " onClick={handleBlur}></div>}
+      <input
+        className={
+          ' w-full rounded border py-2 pl-4 pr-12 font-semibold text-white shadow transition duration-300' +
+          ' border-secondary bg-[#252547]' +
+          ' hover:border-secondary hover:bg-[#1b1b38]' +
+          ' focus:border-[#a16eff] focus:outline-none' +
+          ' hover:focus:border-secondary hover:focus:bg-[#1b1b38]'
+        }
+        placeholder={placeholder}
+        type="text"
+        value={text}
+        onChange={handleChangeText}
+      />
+      {loading && (
+        <div className="absolute right-3 top-2 h-7 w-7 animate-spin rounded-full border-2 border-white border-t-transparent "></div>
+      )}
+      {expand && (
+        <div className={`absolute z-50 max-h-72 max-w-sm overflow-auto border border-secondary bg-primary`}>
+          {list.map((option: SelectOption) => {
+            return (
+              <div
+                key={option.value}
+                className={`cursor-pointer px-4 py-2 transition hover:bg-slate-100/50 `}
+                onClick={() => handleSelect(option)}
+              >
+                {option.label}
+              </div>
+            );
+          })}
+          {!list.length && !loading && text !== '' && <div className={`w-full px-4 py-2 `}>Not found</div>}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default React.memo(SuggestiveInput);

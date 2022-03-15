@@ -1,26 +1,35 @@
 import React, { useCallback, useState } from 'react';
 import { SelectOption } from '../../../../models/utils/input';
 import Checkbox from './Checkbox';
+import useSelectIndex from './useSelectIndex';
 
 interface CheckboxSelectionProps {
   option: SelectOption;
   onChange(option: SelectOption): void;
   selected: boolean;
+  focus?: boolean;
 }
 
-const CheckboxSelection = (props: CheckboxSelectionProps) => {
-  const { option, selected, onChange } = props;
+const CheckboxSelection = React.forwardRef<HTMLDivElement, CheckboxSelectionProps>(function CheckBoxForwardRef(
+  props: CheckboxSelectionProps,
+  ref,
+) {
+  const { option, selected, onChange, focus } = props;
   const handleChange = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     onChange(option);
   };
   return (
-    <div className={`flex items-center px-4 py-2 transition hover:bg-slate-100/50 `} onClick={handleChange}>
+    <div
+      ref={ref}
+      className={`${focus && 'bg-slate-100/50'} flex items-center px-4 py-2 transition hover:bg-slate-100/50 `}
+      onClick={handleChange}
+    >
       <Checkbox value={selected} />
       <div className="ml-1 p-1">{option.label}</div>
     </div>
   );
-};
+});
 
 interface Props {
   title: string;
@@ -36,9 +45,13 @@ function MultiSelectionCheckboxComponent(props: Props) {
   const handleExpand = () => {
     setExpand(!expand);
   };
+
   const handleBlur = useCallback(() => {
     setExpand(false);
   }, []);
+
+  const { focusingElement, wrapperElement, focusIndex, handleSelectByKeyBoard } = useSelectIndex(0, 0, list.length - 1);
+
   const handleChange = (changingOption: SelectOption) => {
     const index = selectedValues.findIndex((value) => value == changingOption.value);
     if (index < 0) {
@@ -50,10 +63,18 @@ function MultiSelectionCheckboxComponent(props: Props) {
       onChange([...newArray]);
     }
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (expand) {
+      handleSelectByKeyBoard(e);
+    }
+  };
+
   const renderOptionList = () => {
     const rows: React.ReactNode[] = [];
     let lastCategory: string;
-    list.forEach((option: SelectOption) => {
+    list.forEach((option: SelectOption, index: number) => {
       if (option.parent && lastCategory != option.parent) {
         lastCategory = option.parent;
         rows.push(
@@ -63,16 +84,26 @@ function MultiSelectionCheckboxComponent(props: Props) {
         );
       }
       const isSelected = selectedValues.includes(option.value);
-      rows.push(<CheckboxSelection key={option.value} option={option} selected={isSelected} onChange={handleChange} />);
+      rows.push(
+        <CheckboxSelection
+          key={option.value}
+          option={option}
+          focus={index == focusIndex}
+          ref={index == focusIndex ? focusingElement : undefined}
+          selected={isSelected}
+          onChange={handleChange}
+        />,
+      );
     });
     return rows;
   };
   return (
     <div
       className="relative w-full cursor-pointer select-none font-semibold text-white"
-      onBlur={handleBlur}
       tabIndex={0}
+      onKeyDown={handleKeyDown}
     >
+      {expand && <div className="fixed top-0 left-0 h-screen w-screen" onClick={handleBlur}></div>}
       <div
         className={
           'flex items-center gap-x-2 rounded border py-2 px-4 shadow' +
@@ -96,7 +127,12 @@ function MultiSelectionCheckboxComponent(props: Props) {
           className={`fa-solid fa-angle-down ml-auto transition-transform duration-300 ${expand ? '' : 'rotate-180'}`}
         ></i>
       </div>
-      <div className={`${expand ? '' : 'hidden'} absolute z-10 max-h-72 min-w-full overflow-auto bg-primary`}>
+      <div
+        ref={wrapperElement}
+        className={`${
+          expand ? '' : 'hidden'
+        } absolute z-10 max-h-72 min-w-full overflow-auto border border-secondary bg-primary`}
+      >
         {renderOptionList()}
       </div>
     </div>

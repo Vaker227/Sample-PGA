@@ -15,6 +15,26 @@ export async function CustomFetch(url: string,
         body: typeof body === 'object' ? JSON.stringify(body) : body,
         headers:
         {
+            'Content-Type': contentType !== 'multipart/form-data' ? contentType || 'application/json' : '',
+            Authorization: auth ? Cookies.get(ACCESS_TOKEN_KEY) || '' : '',
+        },
+        cache: 'no-store',
+    });
+    const json = await res.json();
+    return json
+}
+
+export async function CustomFetchFormData(url: string,
+    method: 'get' | 'post' | 'delete' | 'put' = 'get',
+    body?: FormData,
+    auth = true,
+    contentType?: string): Promise<IResponse | any> {
+    const res = await fetch(url, {
+        credentials: 'include',
+        method,
+        body: body,
+        headers:
+        {
             // 'Content-Type': contentType !== 'multipart/form-data' ? contentType || 'application/json' : '',
             Authorization: auth ? Cookies.get(ACCESS_TOKEN_KEY) || '' : '',
         },
@@ -28,9 +48,10 @@ export async function CustomFetch(url: string,
 
 export const getStyleClasses = (type: string) => {
     const typeObj: IButtonType = {
-        bg: 'bg-white',
-        text: 'text-black hover:text-gray-400',
-        spacing: 'py-1.5 px-2'
+        bg: 'bg-transparent',
+        text: 'text-gray-400 hover:text-white',
+        spacing: 'py-1.5 px-2',
+        border: 'border border-gray-400 hover:border-white'
     };
     switch (type) {
         case 'purple':

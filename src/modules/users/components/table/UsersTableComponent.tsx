@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { loadingProcess } from '../../../../configs/loadingProcess';
 import { IFilterUser, IUserInfo } from '../../../../models/user';
@@ -14,14 +14,40 @@ interface Props {
   total: number;
   filter: IFilterUser;
   onSettingsChange(filterSort: Partial<IFilterUser>): void;
-  onSelectRow(userId: IUserInfo['profile_id']): void;
-  onSelectAllRows(changeTo: boolean): void;
+  onSelectRow: React.Dispatch<React.SetStateAction<string[]>>;
   userList: IUserInfo[];
 }
 
 const UsersTableComponent = (props: Props) => {
-  const { selectedUsers, total, onSettingsChange, filter, onSelectRow, onSelectAllRows, userList } = props;
+  const { selectedUsers, total, onSettingsChange, filter, onSelectRow, userList } = props;
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(turnOffLoadingOverlay(loadingProcess.LoadingUsersList));
+  }, [dispatch, userList]);
+
+  const handleSelectRow = useCallback(
+    (userId: IUserInfo['profile_id']) => {
+      onSelectRow((prev) => {
+        const newSelectedUsers = prev.slice();
+        const index = prev.indexOf(userId);
+        if (index < 0) {
+          newSelectedUsers.push(userId);
+        } else {
+          newSelectedUsers.splice(index, 1);
+        }
+        return newSelectedUsers;
+      });
+    },
+    [onSelectRow],
+  );
+
+  const handleSeletAllRows = useCallback(
+    (changeTo: boolean) => {
+      onSelectRow(changeTo ? userList.map((user) => user.profile_id) : []);
+    },
+    [userList, onSelectRow],
+  );
 
   const handleSelectPage = useCallback(
     (number) => {
@@ -36,11 +62,6 @@ const UsersTableComponent = (props: Props) => {
     [onSettingsChange],
   );
 
-  useEffect(() => {
-    if (userList.length) {
-      dispatch(turnOffLoadingOverlay(loadingProcess.LoadingUsersList));
-    }
-  }, [dispatch, userList]);
   const handleSort = useCallback(
     (sort: any, changeTo: 'DESC' | 'ASC') => {
       onSettingsChange({ sort, order_by: changeTo });
@@ -57,7 +78,7 @@ const UsersTableComponent = (props: Props) => {
             <th className="min-w-[60px] p-3 ">
               <Checkbox
                 value={userList.length > 0 && selectedUsers.length == userList.length}
-                onChange={onSelectAllRows}
+                onChange={handleSeletAllRows}
               />
             </th>
             <th className="min-w-[100px] p-3 ">
@@ -117,7 +138,7 @@ const UsersTableComponent = (props: Props) => {
               key={user.profile_id}
               user={user}
               selected={selectedUsers.includes(user.profile_id)}
-              onSelect={onSelectRow}
+              onSelect={handleSelectRow}
             />
           ))}
         </tbody>

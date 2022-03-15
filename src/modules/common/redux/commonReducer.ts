@@ -1,10 +1,11 @@
 import { ActionType, createCustomAction, getType } from 'typesafe-actions';
 import { loadingProcess } from '../../../configs/loadingProcess';
-import { ICountry, IRole, IRoleWrapper } from '../../../models/common';
+import { ICondition, ICountry, IRole, IRoleWrapper } from '../../../models/common';
 
 export interface CommonState {
     roles: IRoleWrapper,
     countries: ICountry[]
+    conditions: ICondition[],
     loading: loadingProcess[]
 }
 
@@ -18,14 +19,29 @@ export const setCountries = createCustomAction('common/setCountries', (data: ICo
     data,
 }));
 
+export const fetchConditions = createCustomAction('common/fetchConditions', () => ({}))
+export const setConditions = createCustomAction('common/setConditions', (data: ICondition[]) => ({
+    data,
+}));
+
+
 export const turnOnLoadingOverlay = createCustomAction('common/turnOnLoadingOverlay', (processId) => ({ processId }))
 export const turnOffLoadingOverlay = createCustomAction('common/turnOffLoadingOverlay', (processId) => ({ processId }))
 
-const actions = { fetchCountries, setCountries, fetchRoles, setRoles, turnOnLoadingOverlay, turnOffLoadingOverlay };
+const actions = {
+    fetchCountries,
+    setCountries,
+    fetchRoles,
+    setRoles,
+    fetchConditions,
+    setConditions,
+    turnOnLoadingOverlay,
+    turnOffLoadingOverlay
+};
 
 type Action = ActionType<typeof actions>;
 
-const commonDefaultState = { roles: {}, countries: [], loading: [] }
+const commonDefaultState = { roles: {}, countries: [], conditions: [], loading: [] }
 
 export default function commonReducer(state: CommonState = commonDefaultState, action: Action) {
     switch (action.type) {
@@ -33,6 +49,8 @@ export default function commonReducer(state: CommonState = commonDefaultState, a
             return { ...state, roles: action.data };
         case getType(setCountries):
             return { ...state, countries: action.data };
+        case getType(setConditions):
+            return { ...state, conditions: action.data };
         case getType(turnOnLoadingOverlay): {
             const newArr = state.loading.slice()
             const indexOfProcessId = newArr.indexOf(action.processId)

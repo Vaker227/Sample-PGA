@@ -1,5 +1,5 @@
 import { ActionType, createCustomAction, getType } from 'typesafe-actions';
-import { IBrand } from '../../../models/products';
+import { IBrand } from '../../../models/brand';
 
 export interface BrandState {
     list: IBrand[]

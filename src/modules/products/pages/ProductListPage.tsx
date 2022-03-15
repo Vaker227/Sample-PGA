@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
+import { ROUTES } from '../../../configs/routes';
 import { IFilterProduct, IProduct } from '../../../models/product';
 import { AppState } from '../../../redux/reducer';
 import { getErrorMessageResponse } from '../../../utils';
@@ -16,14 +18,12 @@ import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import ProductFilterComponent from '../components/list/ProductFilterComponent';
 import ProductTableComponent from '../components/list/ProductTableComponent';
 
-interface Props {}
-
-const ProductListPage = (props: Props) => {
+const ProductListPage = () => {
   const dispatch = useDispatch();
   const loading = useSelector<AppState, loadingProcess[]>((state) => state.common.loading);
   const [productList, setProductList] = useState<IProduct[]>([]);
   const [recordsTotal, setRecordsTotal] = useState(0);
-  const [selectedRemovingProducts, setSelectedRemoingProducts] = useState<IProduct['id'][]>([]);
+  const [selectedRemovingProducts, setSelectedRemovingProducts] = useState<IProduct['id'][]>([]);
   const [selectedExportintProducts, setSelectedExportintProducts] = useState<IProduct['id'][]>([]);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [filterObject, setFilterObject] = useState<IFilterProduct>({
@@ -47,7 +47,7 @@ const ProductListPage = (props: Props) => {
         dispatch(turnOffLoadingOverlay(loadingProcess.LoadingProductList));
         return;
       }
-      setProductList(response.data);
+      setProductList(response.data || []);
       setRecordsTotal(response.recordsTotal);
     },
     [dispatch],
@@ -61,24 +61,6 @@ const ProductListPage = (props: Props) => {
     setFilterObject((prev) => {
       console.log(prev);
       return { ...prev, ...filter };
-    });
-  }, []);
-
-  const handleSelectRemove = useCallback((productId: IProduct['id']) => {
-    setSelectedRemoingProducts((prev) => {
-      const newArr = prev.slice(0);
-      const index = prev.indexOf(productId);
-      index < 0 ? newArr.push(productId) : newArr.splice(index, 1);
-      return newArr;
-    });
-  }, []);
-
-  const handleSelectExport = useCallback((productId: IProduct['id']) => {
-    setSelectedExportintProducts((prev) => {
-      const newArr = prev.slice(0);
-      const index = prev.indexOf(productId);
-      index < 0 ? newArr.push(productId) : newArr.splice(index, 1);
-      return newArr;
     });
   }, []);
 
@@ -121,9 +103,10 @@ const ProductListPage = (props: Props) => {
       } else {
         dispatch(getSuccessToastAction('Delete success'));
       }
-      setSelectedRemoingProducts([]);
+      setSelectedRemovingProducts([]);
       handleForceReload();
     };
+    console.log('rerenderremove');
     return (
       <Backdrop show={showRemoveModal} closeOnBackdrop onClose={() => setShowRemoveModal(false)}>
         <div className="w-96 divide-y divide-secondary rounded border border-secondary bg-primary text-white">
@@ -142,23 +125,23 @@ const ProductListPage = (props: Props) => {
         </div>
       </Backdrop>
     );
-  }, [showRemoveModal]);
+  }, [showRemoveModal]); // eslint-disable-line
 
   return (
     <div className="px-7 pt-8">
       {loading.length && <LoadingScreen />}
-      <div className="text-4xl text-white">Products {Date.now()}</div>
+      <div className="text-4xl text-white">Products </div>
       <div>
         <ProductFilterComponent filterObject={filterObject} onSearch={handleSearch} />
         <div className="my-8">
-          <Button variant="purple" onClick={() => setShowRemoveModal(true)}>
-            Add Product
+          <Button variant="purple">
+            <Link to={ROUTES.createProduct}>Add Product</Link>
           </Button>
         </div>
         <ProductTableComponent
-          onSelectRemove={handleSelectRemove}
+          onSelectRemove={setSelectedRemovingProducts}
           selectedRemovingProducts={selectedRemovingProducts}
-          onSelectExport={handleSelectExport}
+          onSelectExport={setSelectedExportintProducts}
           selectedExportintProducts={selectedExportintProducts}
           list={productList}
           filter={filterObject}

@@ -30,9 +30,10 @@ export const API_PATHS = {
   editUser: getBaseUrl(APIService.admin) + "/users/edit",
   createUser: getBaseUrl(APIService.admin) + "/users/create",
   getProductList: getBaseUrl(APIService.public) + "/products/list",
-  getProductDetail: getBaseUrl(APIService.vendor) + "/products/detail",
+  getProductDetail: getBaseUrl(APIService.admin) + "/products/detail",
   editProduct: getBaseUrl(APIService.admin) + "/products/edit",
   createProduct: getBaseUrl(APIService.admin) + "/products/create",
+  uploadImageProduct: getBaseUrl(APIService.public) + "/products/upload-image",
   getConditions: getBaseUrl(APIService.admin) + "/conditions/list",
   getShippingList: getBaseUrl(APIService.admin) + "/shipping/list",
 };

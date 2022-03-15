@@ -3,7 +3,8 @@ export enum loadingProcess {
     LoadingUsersList,
     FetchCommonValues,
     RemoveUser,
-    UpdateProduct,
     LoadUser,
-    UpdateUser
+    UpdateUser,
+    LoadProduct,
+    UpdateProduct,
 }

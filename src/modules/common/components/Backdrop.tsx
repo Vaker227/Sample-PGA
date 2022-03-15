@@ -11,7 +11,7 @@ const Backdrop = (props: Props) => {
   const { show, children, onClose, closeOnBackdrop } = props;
   const backdropRef = useRef(null);
   const handleClose = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === backdropRef.current && onClose) {
+    if (closeOnBackdrop && e.target === backdropRef.current && onClose) {
       onClose();
     }
   };

@@ -1,15 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { API_PATHS } from '../../../../configs/api';
+import { ICategory } from '../../../../models/category';
 import { IFilterProduct } from '../../../../models/product';
-import { ICategory } from '../../../../models/products';
 import { SelectOption } from '../../../../models/utils/input';
+import { IVendor } from '../../../../models/vendor';
 import { AppState } from '../../../../redux/reducer';
 import Button from '../../../common/components/button/Button';
 import FilterWrapper from '../../../common/components/filter/FilterWrapper';
 import Checkbox from '../../../common/components/input/Checkbox';
 import InputComponent from '../../../common/components/input/InputComponent';
 import SelectionComponent from '../../../common/components/input/SelectionComponent';
-import InputSearchVendor from './InputSearchVendor';
+import SuggestiveInputDynamic from '../../../common/components/input/SuggestiveInputDymamic';
+import { CustomFetch } from '../../../common/utils';
 
 interface Props {
   filterObject: IFilterProduct;
@@ -20,6 +23,7 @@ const ProductFilterComponent = (props: Props) => {
   const { filterObject, onSearch } = props;
   const categories = useSelector<AppState, ICategory[]>((state) => state.category.list);
   const [filterProperties, setFilterProperties] = useState<IFilterProduct>(filterObject);
+  const [vendorListOptions, setVendorListOptions] = useState<SelectOption[]>([]);
 
   useEffect(() => {
     setFilterProperties(filterObject);
@@ -67,6 +71,18 @@ const ProductFilterComponent = (props: Props) => {
     index > 0 ? selectedTypes.splice(index, 1) : selectedTypes.push(type);
     setFilterProperties({ ...filterProperties, search_type: selectedTypes.filter((type) => type).join(',') });
   };
+
+  const handleFetchVendorSuggestion = useCallback(async (parttern: string) => {
+    const response = await CustomFetch(API_PATHS.getVendorList, 'post', { search: parttern });
+    if (response.errors) {
+      return;
+    }
+    if (!response.data) {
+      setVendorListOptions([]);
+      return;
+    }
+    setVendorListOptions(response.data.map((vendor: IVendor) => ({ label: vendor.name, value: vendor.id })));
+  }, []);
 
   const handleSelectVendor = useCallback((value: string) => {
     setFilterProperties((prev) => ({ ...prev, vendor: value }));
@@ -132,7 +148,7 @@ const ProductFilterComponent = (props: Props) => {
                     value={filterProperties.search_type.includes('description')}
                     onChange={() => handleSelectSearchType('description')}
                   />
-                  FullDescription
+                  Full Description
                 </div>
               </div>
             </div>
@@ -151,7 +167,11 @@ const ProductFilterComponent = (props: Props) => {
             <div>
               <div className="flex items-center gap-x-3">
                 <div>Vendor</div>
-                <InputSearchVendor onChange={handleSelectVendor} />
+                <SuggestiveInputDynamic
+                  list={vendorListOptions}
+                  onChangeText={handleFetchVendorSuggestion}
+                  onSelect={handleSelectVendor}
+                />
               </div>
             </div>
           </div>
