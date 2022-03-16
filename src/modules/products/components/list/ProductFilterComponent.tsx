@@ -52,6 +52,15 @@ const ProductFilterComponent = (props: Props) => {
     [],
   );
 
+  const handleSubmit = useCallback(
+    (e) => {
+      if (e) {
+        e.preventDefault();
+      }
+      onSearch(filterProperties);
+    },
+    [onSearch, filterProperties],
+  );
   const handleSearchKeywords = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setFilterProperties((prev) => ({ ...prev, search: e.target.value }));
   }, []);
@@ -68,7 +77,7 @@ const ProductFilterComponent = (props: Props) => {
   const handleSelectSearchType = (type: string) => {
     const selectedTypes = filterProperties.search_type.split(',');
     const index = selectedTypes.indexOf(type);
-    index > 0 ? selectedTypes.splice(index, 1) : selectedTypes.push(type);
+    index > -1 ? selectedTypes.splice(index, 1) : selectedTypes.push(type);
     setFilterProperties({ ...filterProperties, search_type: selectedTypes.filter((type) => type).join(',') });
   };
 
@@ -89,95 +98,99 @@ const ProductFilterComponent = (props: Props) => {
   }, []);
 
   return (
-    <FilterWrapper
-      header={
-        <>
-          <div className="grow-[2]">
-            <InputComponent
-              placeholder="Search keywords"
-              onChange={handleSearchKeywords}
-              value={filterProperties.search}
-            />
-          </div>
-          <div className="grow">
-            <SelectionComponent
-              title="Any category"
-              list={categoryOptions}
-              selectedValue={filterProperties.category}
-              onChange={handleSelectCategory}
-              returnable
-            />
-          </div>
-          <div className="grow">
-            <SelectionComponent
-              title="Any stock status"
-              list={stockStatusOptions}
-              selectedValue={filterProperties.stock_status}
-              onChange={handleSelectStockStatus}
-            />
-          </div>
-          <div className="flex-none">
-            <Button variant="purple" onClick={() => onSearch(filterProperties)}>
-              Search
-            </Button>
-          </div>
-        </>
-      }
-      detail={
-        <>
-          <div className="flex flex-wrap gap-10 text-white">
-            <div className="flex gap-x-3">
-              <div>Search in:</div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-x-3">
-                  <Checkbox
-                    value={filterProperties.search_type.includes('name')}
-                    onChange={() => handleSelectSearchType('name')}
-                  />
-                  Name
+    <form onSubmit={handleSubmit}>
+      <FilterWrapper
+        header={
+          <>
+            <div className="grow-[2]">
+              <InputComponent
+                placeholder="Search keywords"
+                onChange={handleSearchKeywords}
+                value={filterProperties.search}
+              />
+            </div>
+            <div className="grow">
+              <SelectionComponent
+                title="Any category"
+                list={categoryOptions}
+                selectedValue={filterProperties.category}
+                onChange={handleSelectCategory}
+                returnable
+              />
+            </div>
+            <div className="grow">
+              <SelectionComponent
+                title="Any stock status"
+                list={stockStatusOptions}
+                selectedValue={filterProperties.stock_status}
+                onChange={handleSelectStockStatus}
+              />
+            </div>
+            <div className="flex-none">
+              <Button variant="purple" onClick={handleSubmit}>
+                Search
+              </Button>
+              <input type="submit" hidden />
+            </div>
+          </>
+        }
+        detail={
+          <>
+            <div className="flex flex-wrap gap-10 text-white">
+              <div className="flex gap-x-3">
+                <div>Search in:</div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-x-3">
+                    <Checkbox
+                      value={filterProperties.search_type.includes('name')}
+                      onChange={() => handleSelectSearchType('name')}
+                    />
+                    Name
+                  </div>
+                  <div className="flex items-center gap-x-3">
+                    <Checkbox
+                      value={filterProperties.search_type.includes('sku')}
+                      onChange={() => handleSelectSearchType('sku')}
+                    />
+                    SKU
+                  </div>
+                  <div className="flex items-center gap-x-3">
+                    <Checkbox
+                      value={filterProperties.search_type.includes('description')}
+                      onChange={() => handleSelectSearchType('description')}
+                    />
+                    Full Description
+                  </div>
                 </div>
+              </div>
+              <div>
                 <div className="flex items-center gap-x-3">
-                  <Checkbox
-                    value={filterProperties.search_type.includes('sku')}
-                    onChange={() => handleSelectSearchType('sku')}
+                  <div>Availability</div>
+                  <SelectionComponent
+                    list={availabilityOptions}
+                    selectedValue={filterProperties.availability}
+                    defaultValue="all"
+                    title="Any availability status"
+                    onChange={handleSelectAvailability}
                   />
-                  SKU
                 </div>
+              </div>
+              <div>
                 <div className="flex items-center gap-x-3">
-                  <Checkbox
-                    value={filterProperties.search_type.includes('description')}
-                    onChange={() => handleSelectSearchType('description')}
+                  <div>Vendor</div>
+                  <SuggestiveInputDynamic
+                    list={vendorListOptions}
+                    onChangeText={handleFetchVendorSuggestion}
+                    onSelect={handleSelectVendor}
+                    defaultText=""
                   />
-                  Full Description
                 </div>
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-x-3">
-                <div>Availability</div>
-                <SelectionComponent
-                  list={availabilityOptions}
-                  selectedValue={filterProperties.availability}
-                  defaultValue="all"
-                  title="Any availability status"
-                  onChange={handleSelectAvailability}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-x-3">
-                <div>Vendor</div>
-                <SuggestiveInputDynamic
-                  list={vendorListOptions}
-                  onChangeText={handleFetchVendorSuggestion}
-                  onSelect={handleSelectVendor}
-                />
-              </div>
-            </div>
-          </div>
-        </>
-      }
-    ></FilterWrapper>
+          </>
+        }
+      ></FilterWrapper>
+    </form>
   );
 };
 

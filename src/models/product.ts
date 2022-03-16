@@ -66,6 +66,7 @@ export interface IParamsUploadImage {
 }
 
 export interface IParamsProduct {
+    [key: string]: any
     vendor_id: string
     name: string
     brand_id: IBrand['id']

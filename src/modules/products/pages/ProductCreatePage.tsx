@@ -11,7 +11,7 @@ import ToolBar from '../../common/components/ToolBar';
 import { CustomFetch, CustomFetchFormData } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormProductComponent from '../components/FormProductComponent';
-import { UploadImageProduct } from '../utils';
+import { detectImageChange, UploadImageProduct } from '../utils';
 
 interface Props {}
 
@@ -66,10 +66,9 @@ const ProductCreatePage = (props: Props) => {
   const handleCreateProduct = useCallback(
     async (productInfo: IParamsProduct) => {
       productInfo.arrival_date = moment(productInfo.arrival_date).format('YYYY-MM-DD');
-      const imagesInfo = productInfo.imagesInfo || [];
-      delete productInfo.imagesInfo;
-      const imagesOrder = imagesInfo.map((imageInfo) => imageInfo.file);
+      const { imagesOrder, newImages } = detectImageChange(productInfo);
       productInfo.imagesOrder = imagesOrder;
+      delete productInfo.imagesInfo;
       const createForm = new FormData();
       createForm.append('productDetail', JSON.stringify(productInfo));
       const response = await CustomFetchFormData(API_PATHS.createProduct, 'post', createForm);
@@ -79,12 +78,12 @@ const ProductCreatePage = (props: Props) => {
         return;
       }
       dispatch(getSuccessToastAction('Create product success! ID: ' + response.data));
+
+      // upload image
       const productId = response.data;
       const uploadProcess: Promise<any>[] = [];
-      imagesInfo.forEach((info, index) => {
-        if (info.id == 'new') {
-          uploadProcess.push(UploadImageProduct(productId, index + '', info.url!));
-        }
+      newImages.forEach((info) => {
+        uploadProcess.push(UploadImageProduct(productId, info.order + '', info.url!));
       });
       try {
         await Promise.all(uploadProcess);

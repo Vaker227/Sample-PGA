@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
-import { ROUTES } from '../../../configs/routes';
 import { IParamsProduct } from '../../../models/product';
 import BackButton from '../../common/components/button/BackButton';
 import Button from '../../common/components/button/Button';
@@ -14,7 +13,7 @@ import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/
 import { CustomFetch, CustomFetchFormData } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormProductComponent from '../components/FormProductComponent';
-import { UploadImageProduct } from '../utils';
+import { detectImageChange, preConfigDetailProductObject, UploadImageProduct } from '../utils';
 
 const ProductCreatePage = () => {
   const history = useHistory();
@@ -30,22 +29,14 @@ const ProductCreatePage = () => {
     setTimeout(() => {
       dispatch(turnOffLoadingOverlay(loadingProcess.LoadProduct));
     }, 2000);
-    if (response.errors && !response.data) {
+    if (response.errors || !response.data) {
       dispatch(getErrorToastAction("Cant load this product's info"));
       dispatch(goBack());
       return;
     }
-    // pre-config data
-    const tempProductInfo: IParamsProduct = response.data;
-    tempProductInfo.imagesInfo = tempProductInfo.images!.map((image) => ({ ...image, url: image.file }));
-    tempProductInfo.categories = tempProductInfo.categories.map((category: any) => category.category_id);
-    if (tempProductInfo.shipping && tempProductInfo.shipping.length < 1) {
-      tempProductInfo.shipping?.push({ id: '1', price: '0' });
-    }
-    tempProductInfo.shipping_to_zones = tempProductInfo.shipping;
-    tempProductInfo.arrival_date = new Date(parseInt(tempProductInfo.arrival_date as string) * 1000);
-
-    setProductInfo(response.data);
+    // convert to valid form's type
+    const validFormProductInfo = preConfigDetailProductObject(response.data);
+    setProductInfo(validFormProductInfo);
     dispatch(getSuccessToastAction('Loaded Product'));
   }, [dispatch, params.id]);
 
@@ -59,16 +50,16 @@ const ProductCreatePage = () => {
 
   const handleUpdateProduct = useCallback(
     async (productInfo: IParamsProduct) => {
-      productInfo.arrival_date = moment(productInfo.arrival_date).format('YYYY-MM-DD');
-      const imagesInfo = productInfo.imagesInfo || [];
-      delete productInfo.imagesInfo;
-      const imagesOrder = imagesInfo.map((imageInfo) => imageInfo.file);
-      productInfo.imagesOrder = imagesOrder;
-      productInfo.deleted_images =
-        originalProductInfo?.images?.filter((image) => !imagesOrder.includes(image.file)).map((image) => image.id) ??
-        [];
-
+      // set id for send request as update (create/update have same request url)
       productInfo.id = originalProductInfo?.id;
+      // convert to server type
+      productInfo.arrival_date = moment(productInfo.arrival_date).format('YYYY-MM-DD');
+      // image process
+      const { imagesOrder, deleted_images, newImages } = detectImageChange(productInfo, originalProductInfo);
+      productInfo.imagesOrder = imagesOrder;
+      productInfo.deleted_images = deleted_images;
+      delete productInfo.imagesInfo;
+
       const createForm = new FormData();
       createForm.append('productDetail', JSON.stringify(productInfo));
       const response = await CustomFetchFormData(API_PATHS.createProduct, 'post', createForm);
@@ -77,23 +68,23 @@ const ProductCreatePage = () => {
         return;
       }
       dispatch(getSuccessToastAction('Update product success! ID: ' + response.data));
-      const productId = response.data;
-      const uploadProcess: Promise<any>[] = [];
-      imagesInfo.forEach((info, index) => {
-        if (info.id == 'new') {
-          uploadProcess.push(UploadImageProduct(productId, index + '', info.url!));
-        }
-      });
-      try {
-        if (uploadProcess.length) {
+
+      // upload new image
+      if (newImages.length) {
+        try {
+          const productId = response.data;
+          const uploadProcess: Promise<any>[] = [];
+          newImages.forEach((info) => {
+            uploadProcess.push(UploadImageProduct(productId, info.order + '', info.url!));
+          });
           await Promise.all(uploadProcess);
           dispatch(getSuccessToastAction('Uploaded images'));
+        } catch (error: any) {
+          if (typeof error == 'string') dispatch(getErrorToastAction(error));
         }
-      } catch (error: any) {
-        if (typeof error == 'string') dispatch(getErrorToastAction(error));
-      } finally {
-        fetchProductInfo();
       }
+
+      fetchProductInfo();
     },
     [dispatch, originalProductInfo, fetchProductInfo],
   );
@@ -118,16 +109,18 @@ const ProductCreatePage = () => {
         <BackButton onClick={() => history.goBack()} />
       </div>
       <div className="mx-10 text-3xl font-semibold">Product Detail</div>
-      {originalProductInfo && (
-        <FormProductComponent
-          detailForm
-          productInfo={originalProductInfo}
-          submitFlag={submitFlag}
-          setSubmitFlag={setSubmitFlag}
-          onSubmit={handleSubmitForm}
-          onSubmitable={handleSetSubmitable}
-        />
-      )}
+      <div className="min-h-screen">
+        {originalProductInfo && (
+          <FormProductComponent
+            detailForm
+            productInfo={originalProductInfo}
+            submitFlag={submitFlag}
+            setSubmitFlag={setSubmitFlag}
+            onSubmit={handleSubmitForm}
+            onSubmitable={handleSetSubmitable}
+          />
+        )}
+      </div>
       <div className="sticky bottom-0 px-10">
         <ToolBar>
           <Button disabled={!submitable} variant="yellow" onClick={() => setSubmitFlag(true)}>

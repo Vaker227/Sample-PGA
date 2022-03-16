@@ -18,11 +18,12 @@ interface Props {
   onSubmitable(changeTo: boolean): void;
   onSubmit?(userInfo: IParamsUserInfo): void;
   triggerSubmitFlag?: boolean;
+  setSubmitFlag?: React.Dispatch<React.SetStateAction<boolean>>;
   detailForm?: boolean;
 }
 
 const FormUserProfileComponent = (props: Props) => {
-  const { userInfo, onSubmitable, onSubmit, triggerSubmitFlag, detailForm } = props;
+  const { userInfo, onSubmitable, onSubmit, triggerSubmitFlag, detailForm, setSubmitFlag } = props;
   const roles = useSelector<AppState, IRoleWrapper>((state) => state.common.roles);
   const {
     watch,
@@ -67,6 +68,9 @@ const FormUserProfileComponent = (props: Props) => {
     }
     onSubmitable(true);
   }, [
+    onSubmitable,
+    dirtyFields,
+    detailForm,
     dirtyFields.firstName,
     dirtyFields.lastName,
     dirtyFields.email,
@@ -79,9 +83,6 @@ const FormUserProfileComponent = (props: Props) => {
     errors.email,
     errors.password,
     errors.confirm_password,
-    onSubmitable,
-    dirtyFields,
-    detailForm,
   ]);
 
   const typeOptions: SelectOption[] = useMemo(
@@ -129,9 +130,9 @@ const FormUserProfileComponent = (props: Props) => {
 
   useEffect(() => {
     if (triggerSubmitFlag) {
-      handleSubmit(handleChangeUserInfo)();
+      handleSubmit(handleChangeUserInfo, () => setSubmitFlag && setSubmitFlag(false))();
     }
-  }, [triggerSubmitFlag, handleChangeUserInfo, handleSubmit]);
+  }, [triggerSubmitFlag, handleChangeUserInfo, handleSubmit, setSubmitFlag]);
 
   return (
     <form onSubmit={handleSubmit(handleChangeUserInfo)}>

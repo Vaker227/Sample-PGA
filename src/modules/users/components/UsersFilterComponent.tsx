@@ -63,6 +63,15 @@ const UsersFilterComponent = (props: Props) => {
     [],
   );
 
+  const handleSubmit = useCallback(
+    (e: any) => {
+      if (e) {
+        e.preventDefault();
+      }
+      onSearch(filterProperties);
+    },
+    [onSearch, filterProperties],
+  );
   const handleChangeSearchs = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setFilterProperties((prev) => ({ ...prev, search: e.target.value }));
@@ -122,122 +131,125 @@ const UsersFilterComponent = (props: Props) => {
   );
 
   return (
-    <FilterWrapper
-      header={
-        <>
-          <div className="w-32 flex-auto">
-            <InputComponent
-              placeholder="Search keyword"
-              value={filterProperties.search}
-              onChange={handleChangeSearchs}
-            />
-          </div>
-          <div className="w-32 flex-auto">
-            <MultiSelectionCheckboxComponent
-              title="All memberships"
-              list={membershipOptions}
-              onChange={handleChangeMemberships}
-              selectedValues={filterProperties.memberships}
-            />
-          </div>
-          <div className="w-32 flex-auto">
-            <MultiSelectionCheckboxComponent
-              title="All user types"
-              list={roleOptions}
-              onChange={handleChangeRole}
-              selectedValues={filterProperties.types}
-            />
-          </div>
-          <div className="w-16 flex-auto">
-            <SelectionComponent
-              returnable
-              title="Any status"
-              list={filterUserStatusOptions}
-              onChange={handleChangeUserStatus}
-              selectedValue={filterProperties.status[0]}
-            />
-          </div>
-          <div className="flex-none">
-            <Button variant="purple" onClick={() => onSearch(filterProperties)}>
-              Search
-            </Button>
-          </div>
-        </>
-      }
-      detail={
-        <>
-          <div className="flex flex-wrap space-y-4">
-            <div className=" h-full w-full shrink-0 space-y-3 md:ml-8 md:w-2/5 lg:w-1/3">
-              <div className="flex items-center justify-between">
-                <div className="w-20 shrink-0 text-sm text-white">Country</div>
-                <div className="shrink-0 grow md:w-52">
-                  <SelectionComponent
-                    title="Select country"
-                    list={countryOptions}
-                    onChange={handleChangeCountry}
-                    returnable
-                    selectedValue={filterProperties.country}
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="w-20 shrink-0 text-sm text-white">State</div>
-                <div className="shrink-0 grow md:w-52">
-                  <InputComponent value={filterProperties.state} onChange={handleChangeState} />
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="w-20 shrink-0 text-sm text-white">Address</div>
-                <div className="shrink-0 grow md:w-52">
-                  <InputComponent value={filterProperties.address} onChange={handleChangeAddress} />
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="w-20 shrink-0 text-sm text-white">Phone</div>
-                <div className="shrink-0 grow md:w-52">
-                  <InputComponent value={filterProperties.phone} onChange={handleChangePhone} />
-                </div>
-              </div>
+    <form onSubmit={handleSubmit}>
+      <FilterWrapper
+        header={
+          <>
+            <div className="w-32 flex-auto">
+              <InputComponent
+                placeholder="Search keyword"
+                value={filterProperties.search}
+                onChange={handleChangeSearchs}
+              />
             </div>
-            <div className="md:1/2 h-full grow text-white md:ml-8 lg:w-2/5">
-              <div className="flex w-full space-x-2 ">
-                <div className="flex-initial">User activity</div>
-                <div className="shrink-0 grow space-y-4">
-                  <div className="flex space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id="filter-register"
-                        checked={filterProperties.date_type == 'R'}
-                        onChange={() => setFilterProperties({ ...filterProperties, date_type: 'R' })}
-                      ></input>
-                      <label htmlFor="filter-register">Register</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id="filter-last-login"
-                        checked={filterProperties.date_type == 'L'}
-                        onChange={() => setFilterProperties({ ...filterProperties, date_type: 'L' })}
-                      ></input>
-                      <label htmlFor="filter-last-login">Last logged in</label>
-                    </div>
-                  </div>
-                  <div>
-                    <PickDateComponent
-                      selectRange
-                      range={{ startDate: filterProperties.date_range[0], endDate: filterProperties.date_range[1] }}
-                      onChange={handleChangeRange}
-                      placeholder="Enter date range"
+            <div className="w-32 flex-auto">
+              <MultiSelectionCheckboxComponent
+                title="All memberships"
+                list={membershipOptions}
+                onChange={handleChangeMemberships}
+                selectedValues={filterProperties.memberships}
+              />
+            </div>
+            <div className="w-32 flex-auto">
+              <MultiSelectionCheckboxComponent
+                title="All user types"
+                list={roleOptions}
+                onChange={handleChangeRole}
+                selectedValues={filterProperties.types}
+              />
+            </div>
+            <div className="w-16 flex-auto">
+              <SelectionComponent
+                returnable
+                title="Any status"
+                list={filterUserStatusOptions}
+                onChange={handleChangeUserStatus}
+                selectedValue={filterProperties.status[0]}
+              />
+            </div>
+            <div className="flex-none">
+              <Button variant="purple" onClick={handleSubmit}>
+                Search
+              </Button>
+              <input type="submit" />
+            </div>
+          </>
+        }
+        detail={
+          <>
+            <div className="flex flex-wrap space-y-4">
+              <div className=" h-full w-full shrink-0 space-y-3 md:ml-8 md:w-2/5 lg:w-1/3">
+                <div className="flex items-center justify-between">
+                  <div className="w-20 shrink-0 text-sm text-white">Country</div>
+                  <div className="shrink-0 grow md:w-52">
+                    <SelectionComponent
+                      title="Select country"
+                      list={countryOptions}
+                      onChange={handleChangeCountry}
+                      returnable
+                      selectedValue={filterProperties.country}
                     />
                   </div>
                 </div>
+                <div className="flex items-center justify-between">
+                  <div className="w-20 shrink-0 text-sm text-white">State</div>
+                  <div className="shrink-0 grow md:w-52">
+                    <InputComponent value={filterProperties.state} onChange={handleChangeState} />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="w-20 shrink-0 text-sm text-white">Address</div>
+                  <div className="shrink-0 grow md:w-52">
+                    <InputComponent value={filterProperties.address} onChange={handleChangeAddress} />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="w-20 shrink-0 text-sm text-white">Phone</div>
+                  <div className="shrink-0 grow md:w-52">
+                    <InputComponent value={filterProperties.phone} onChange={handleChangePhone} />
+                  </div>
+                </div>
+              </div>
+              <div className="md:1/2 h-full grow text-white md:ml-8 lg:w-2/5">
+                <div className="flex w-full space-x-2 ">
+                  <div className="flex-initial">User activity</div>
+                  <div className="shrink-0 grow space-y-4">
+                    <div className="flex space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="filter-register"
+                          checked={filterProperties.date_type == 'R'}
+                          onChange={() => setFilterProperties({ ...filterProperties, date_type: 'R' })}
+                        ></input>
+                        <label htmlFor="filter-register">Register</label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="filter-last-login"
+                          checked={filterProperties.date_type == 'L'}
+                          onChange={() => setFilterProperties({ ...filterProperties, date_type: 'L' })}
+                        ></input>
+                        <label htmlFor="filter-last-login">Last logged in</label>
+                      </div>
+                    </div>
+                    <div>
+                      <PickDateComponent
+                        selectRange
+                        range={{ startDate: filterProperties.date_range[0], endDate: filterProperties.date_range[1] }}
+                        onChange={handleChangeRange}
+                        placeholder="Enter date range"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </>
-      }
-    />
+          </>
+        }
+      />
+    </form>
   );
 };
 

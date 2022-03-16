@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
 import { ROUTES } from '../../../configs/routes';
 import { IFilterUser, IUserInfo } from '../../../models/user';
-import { AppState } from '../../../redux/reducer';
 import { getErrorMessageResponse } from '../../../utils';
 import Backdrop from '../../common/components/Backdrop';
 import Button from '../../common/components/button/Button';
-import LoadingScreen from '../../common/components/LoadingScreen';
 import ToolBar from '../../common/components/ToolBar';
 import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
 import { getCommonValues } from '../../common/redux/commonSagas';
@@ -20,7 +18,6 @@ import UsersFilterComponent from '../components/UsersFilterComponent';
 
 const UserListPage = () => {
   const dispatch = useDispatch();
-  const loading = useSelector<AppState, loadingProcess[]>((state) => state.common.loading);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [recordsTotal, setRecordsTotal] = useState(0);
   const [selectedUsers, setSelectedUser] = useState<IUserInfo['profile_id'][]>([]);
@@ -125,7 +122,6 @@ const UserListPage = () => {
 
   return (
     <div className="px-7 pt-8">
-      {loading.length && <LoadingScreen />}
       <div className="text-4xl text-white">Search for users </div>
       <div>
         <UsersFilterComponent filterObject={filterObject} onSearch={handleOnSearch} />

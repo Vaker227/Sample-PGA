@@ -1,5 +1,5 @@
-const productRoute = '/products'
-const userRoute = "/user"
+export const productRoute = '/products'
+export const userRoute = "/user"
 
 export const ROUTES = {
   home: '/',

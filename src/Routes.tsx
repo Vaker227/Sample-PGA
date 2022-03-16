@@ -21,19 +21,13 @@ export const Routes = () => {
     <Suspense fallback={<LoadingScreen />}>
       <Switch location={location}>
         <Route path={ROUTES.login} component={LoginPage} />
-        <Route path="/">
-          <Layout>
-            <Switch>
-              <ProtectedRoute exact path={ROUTES.home} component={HomePage} />
-              <ProtectedRoute path={ROUTES.listUsers} component={UserListPage} />
-              <ProtectedRoute path={ROUTES.detailUser + '/:id'} component={UserDetailPage} />
-              <ProtectedRoute path={ROUTES.createUser} component={UserCreatePage} />
-              <ProtectedRoute path={ROUTES.listProducts} component={ProductListPage} />
-              <ProtectedRoute path={ROUTES.createProduct} component={ProductCreatePage} />
-              <ProtectedRoute path={ROUTES.detailProduct + '/:id'} component={ProductDetailPage} />
-            </Switch>
-          </Layout>
-        </Route>
+        <ProtectedRoute exact path={ROUTES.home} component={HomePage} />
+        <ProtectedRoute path={ROUTES.listUsers} component={UserListPage} />
+        <ProtectedRoute path={ROUTES.detailUser + '/:id'} component={UserDetailPage} />
+        <ProtectedRoute path={ROUTES.createUser} component={UserCreatePage} />
+        <ProtectedRoute path={ROUTES.listProducts} component={ProductListPage} />
+        <ProtectedRoute path={ROUTES.createProduct} component={ProductCreatePage} />
+        <ProtectedRoute path={ROUTES.detailProduct + '/:id'} component={ProductDetailPage} />
       </Switch>
     </Suspense>
   );

@@ -69,6 +69,7 @@ export interface IFilterUser extends IFilterUserProperties, IFilterUserSort {
 
 
 export interface IParamsUserInfo {
+  [key: string]: any
   email: string
   firstName: string
   lastName: string

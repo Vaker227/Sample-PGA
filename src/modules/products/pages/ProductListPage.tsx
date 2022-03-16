@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
 import { ROUTES } from '../../../configs/routes';
 import { IFilterProduct, IProduct } from '../../../models/product';
-import { AppState } from '../../../redux/reducer';
 import { getErrorMessageResponse } from '../../../utils';
 import Backdrop from '../../common/components/Backdrop';
 import Button from '../../common/components/button/Button';
-import LoadingScreen from '../../common/components/LoadingScreen';
 import ToolBar from '../../common/components/ToolBar';
 import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
 import { getCommonValues } from '../../common/redux/commonSagas';
@@ -20,7 +18,6 @@ import ProductTableComponent from '../components/list/ProductTableComponent';
 
 const ProductListPage = () => {
   const dispatch = useDispatch();
-  const loading = useSelector<AppState, loadingProcess[]>((state) => state.common.loading);
   const [productList, setProductList] = useState<IProduct[]>([]);
   const [recordsTotal, setRecordsTotal] = useState(0);
   const [selectedRemovingProducts, setSelectedRemovingProducts] = useState<IProduct['id'][]>([]);
@@ -59,7 +56,6 @@ const ProductListPage = () => {
 
   const handleSettingsChange = useCallback((filter: Partial<IFilterProduct>) => {
     setFilterObject((prev) => {
-      console.log(prev);
       return { ...prev, ...filter };
     });
   }, []);
@@ -84,10 +80,12 @@ const ProductListPage = () => {
         <Button variant="yellow" disabled={!selectedRemovingProducts.length} onClick={() => setShowRemoveModal(true)}>
           {selectedRemovingProducts.length ? 'Remove selected' : 'Save Changes'}
         </Button>
-        <Button variant="yellow">Export CSV</Button>
+        <Button disabled={!selectedExportintProducts.length} variant="yellow">
+          Export CSV
+        </Button>
       </ToolBar>
     ),
-    [selectedRemovingProducts],
+    [selectedRemovingProducts, selectedExportintProducts],
   );
 
   const removeModalElement = useMemo(() => {
@@ -129,7 +127,6 @@ const ProductListPage = () => {
 
   return (
     <div className="px-7 pt-8">
-      {loading.length && <LoadingScreen />}
       <div className="text-4xl text-white">Products </div>
       <div>
         <ProductFilterComponent filterObject={filterObject} onSearch={handleSearch} />

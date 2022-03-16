@@ -1,5 +1,6 @@
 import Cookies from "js-cookie"
 import { API_PATHS } from "../../configs/api"
+import { IParamsProduct } from "../../models/product"
 import { ACCESS_TOKEN_KEY } from "../../utils/constants"
 
 
@@ -26,4 +27,48 @@ export const UploadImageProduct = async (productId: string, order: string, image
         throw json.errors
     }
     return json
+}
+
+
+export const preConfigDetailProductObject = (productInfo: IParamsProduct) => {
+    const tempProductInfo: IParamsProduct = { ...productInfo };
+    // prevent null or undifined value
+    Object.keys(tempProductInfo).forEach((key) => tempProductInfo[key as string] = tempProductInfo[key as string] ?? '')
+    // image info
+    if (tempProductInfo.images && tempProductInfo.images.length > 0) {
+        tempProductInfo.imagesInfo = tempProductInfo.images.map((image) => ({ ...image, url: image.file }));
+
+    }
+    // categories to type [id,id,...]
+    tempProductInfo.categories = tempProductInfo.categories.map((category: any) => category.category_id);
+    // shipping set default us 
+    if (tempProductInfo.shipping && tempProductInfo.shipping.length < 1) {
+        tempProductInfo.shipping?.push({ id: '1', price: '0' });
+    }
+    // convert to view-form's type
+    tempProductInfo.shipping_to_zones = tempProductInfo.shipping;
+    // convert to JS Date
+    tempProductInfo.arrival_date = new Date(parseInt(tempProductInfo.arrival_date as string) * 1000);
+    return tempProductInfo;
+}
+
+export const detectImageChange = (modifiedInfo: IParamsProduct, originalInfo?: IParamsProduct) => {
+    const imagesInfo = modifiedInfo.imagesInfo || [];
+
+    const imagesOrder = imagesInfo.map((imageInfo) => imageInfo.file);
+    let deleted_images: any = []
+    if (originalInfo) {
+        deleted_images =
+            originalInfo?.images?.filter((image) => !imagesOrder.includes(image.file)).map((image) => image.id) ??
+            [];
+
+    }
+
+    const newImages: { order: number, url: string }[] = []
+    imagesInfo.forEach((info, index) => {
+        if (info.id == 'new') {
+            newImages.push({ order: index, url: info.url! });
+        }
+    });
+    return { imagesOrder, deleted_images, newImages }
 }
