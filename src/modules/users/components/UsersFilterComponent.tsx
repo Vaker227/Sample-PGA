@@ -171,7 +171,7 @@ const UsersFilterComponent = (props: Props) => {
               <Button variant="purple" onClick={handleSubmit}>
                 Search
               </Button>
-              <input type="submit" />
+              <input type="submit" hidden />
             </div>
           </>
         }

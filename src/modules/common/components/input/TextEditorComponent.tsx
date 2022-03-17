@@ -21,7 +21,12 @@ const EditorToolbar = (props: EditorToolbarProps) => {
         <button disabled={viewingRaw} className="ql-list disabled:opacity-60" value={'bullet'}></button>
       </span>
       <span className="ql-formats">
-        <button onClick={onClickRaw} className="grid place-content-center text-sm text-black" style={{ padding: 0 }}>
+        <button
+          type="button"
+          onClick={onClickRaw}
+          className="grid place-content-center text-sm text-black"
+          style={{ padding: 0 }}
+        >
           <i className="fa-solid fa-code"></i>
         </button>
       </span>
@@ -42,12 +47,11 @@ const TextEditorComponent = (props: Props) => {
   const handleViewCode = () => {
     if (viewRaw) {
       setViewRaw(false);
-    } else {
-      if (rawCodeRef.current) {
-        rawCodeRef.current.style.height = rawCodeRef.current.scrollHeight + 'px';
-      }
-      setViewRaw(true);
+      return;
+    } else if (rawCodeRef.current) {
+      rawCodeRef.current.style.height = rawCodeRef.current.scrollHeight + 'px';
     }
+    setViewRaw(true);
   };
 
   useEffect(() => {
@@ -73,7 +77,7 @@ const TextEditorComponent = (props: Props) => {
           ref={rawCodeRef}
           onBlur={onBlur}
           onChange={(e) => onChange(e.target.value)}
-          className="min-h-[150px] w-full bg-transparent"
+          className="min-h-[150px] w-full border bg-transparent"
           value={text}
         ></textarea>
       ) : (

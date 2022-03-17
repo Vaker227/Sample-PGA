@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SelectOption } from '../../../../models/utils/input';
 
 interface Props {
@@ -17,6 +17,18 @@ const SuggestiveInput = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [inputDebounce, setInputDebounce] = useState<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if (searching) {
+      setLoading(false);
+      setExpand(true);
+      setSearching(false);
+    }
+  }, [list]); /* eslint-disable-line */ // only change when focus(searching)
+
+  useEffect(() => {
+    setText(defaultText);
+  }, [defaultText]);
 
   const handleChangeText = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,14 +62,6 @@ const SuggestiveInput = (props: Props) => {
     setExpand(false);
     onBlur && onBlur();
   }, [onSelect, onBlur]);
-
-  useEffect(() => {
-    if (searching) {
-      setLoading(false);
-      setExpand(true);
-      setSearching(false);
-    }
-  }, [list]);
   return (
     <div className="relative">
       {expand && <div className="fixed top-0 left-0 h-screen w-screen " onClick={handleBlur}></div>}

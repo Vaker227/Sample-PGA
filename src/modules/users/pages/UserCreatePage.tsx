@@ -19,9 +19,7 @@ const UserCreatePage = () => {
 
   const handleCreateUser = useCallback(
     async (userInfo: IParamsUserInfo) => {
-      console.log(userInfo);
       const response = await CustomFetch(API_PATHS.createUser, 'post', userInfo);
-      console.log(response);
       if (response.errors || !response.success) {
         dispatch(getErrorToastAction(response.errors));
         return;

@@ -62,7 +62,6 @@ function MultiSelectionComponent(props: MultiSelectionProps) {
     handleSelectByKeyBoard(e);
   }, []); // eslint-disable-line
   const handleSelect = (selection: SelectOption) => {
-    console.log([...selectedValues, selection.value]);
     onChange([...selectedValues, selection.value]);
     inputRef.current?.focus();
   };

@@ -27,8 +27,7 @@ export async function CustomFetch(url: string,
 export async function CustomFetchFormData(url: string,
     method: 'get' | 'post' | 'delete' | 'put' = 'get',
     body?: FormData,
-    auth = true,
-    contentType?: string): Promise<IResponse | any> {
+    auth = true): Promise<IResponse | any> {
     const res = await fetch(url, {
         credentials: 'include',
         method,

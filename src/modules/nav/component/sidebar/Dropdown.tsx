@@ -22,9 +22,11 @@ const Dropdown = (props: Props) => {
   };
 
   return (
-    <div className={`${sidebarExpand ? 'pl-7' : 'pl-6'} pr-3 text-sm font-semibold`} onClick={() => {}}>
+    <div className={`${sidebarExpand ? 'pl-7' : 'pl-6'} pr-3 text-sm font-semibold `} onClick={() => {}}>
       <div
-        className={`flex cursor-pointer items-center py-3 hover:text-violet-400 ${active && 'text-violet-500'}`}
+        className={`flex cursor-pointer items-center py-3 hover:text-violet-400 active:animate-pulse active:bg-white/10 ${
+          active && 'text-violet-500'
+        }`}
         onClick={handleExpand}
       >
         <div className="">{icon}</div>

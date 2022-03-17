@@ -41,9 +41,11 @@ function PickDateComponent(props: Props) {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
+
+
   useEffect(() => {
     setStartDate(range?.startDate ? new Date(range.startDate) : null);
-    setEndDate(range?.endDate ? new Date(range.startDate) : null);
+    setEndDate(range?.endDate ? new Date(range.endDate) : null);
   }, [range]);
 
   const handleChange = (date: Date | null) => {

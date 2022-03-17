@@ -8,14 +8,12 @@ import { IParamsProduct } from '../../../models/product';
 import BackButton from '../../common/components/button/BackButton';
 import Button from '../../common/components/button/Button';
 import ToolBar from '../../common/components/ToolBar';
-import { CustomFetch, CustomFetchFormData } from '../../common/utils';
+import { CustomFetchFormData } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormProductComponent from '../components/FormProductComponent';
 import { detectImageChange, UploadImageProduct } from '../utils';
 
-interface Props {}
-
-const ProductCreatePage = (props: Props) => {
+const ProductCreatePage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const defaultProductCreateInfo: IParamsProduct = useMemo(
@@ -42,7 +40,7 @@ const ProductCreatePage = (props: Props) => {
       quantity: '',
       sku: Date.now() + '',
       participate_sale: 0,
-      sale_price: '',
+      sale_price: '0',
       og_tags_type: '0',
       og_tags: '',
       meta_desc_type: 'A',
@@ -72,7 +70,6 @@ const ProductCreatePage = (props: Props) => {
       const createForm = new FormData();
       createForm.append('productDetail', JSON.stringify(productInfo));
       const response = await CustomFetchFormData(API_PATHS.createProduct, 'post', createForm);
-      console.log(response);
       if (response.errors || !response.data) {
         dispatch(getErrorToastAction(response.errors || 'Something wrong'));
         return;

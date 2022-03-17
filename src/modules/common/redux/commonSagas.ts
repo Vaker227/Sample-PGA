@@ -22,7 +22,6 @@ export function* fetchCountriesSaga(): any {
     try {
         const response = yield call(CustomFetch, API_PATHS.getCountries)
         if (response.errors) {
-            console.log(response.errors)
             yield put(getErrorToastAction(getErrorMessageResponse(response) as string))
             return;
         }

@@ -9,6 +9,11 @@ function App() {
   useEffect(() => {
     dispatch(getCommonValues.request());
   }, [dispatch]);
+
+  useEffect(() => {
+    const preLoading = document.getElementById('pre-loading');
+    if (preLoading) preLoading.style.display = 'none';
+  }, []);
   return (
     <>
       <Routes />

@@ -81,14 +81,14 @@ export interface IParamsProduct {
     taxExempt?: 0 | 1 | '0' | '1'
     tax_exempt: 0 | 1 | '0' | '1'
     price: number | string
+    participate_sale: number | string
     sale_price_type: string
+    sale_price: number | string
     arrival_date: Date | string
     inventory_tracking: number | string
     quentity?: number
     quantity: number | string
     sku: string
-    participate_sale: number | string
-    sale_price: number | string
     og_tags_types?: string
     og_tags_type: '0' | '1' // 0:auto, 1: cutsom 
     og_tags: string

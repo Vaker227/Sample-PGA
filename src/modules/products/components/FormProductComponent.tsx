@@ -1,4 +1,3 @@
-import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import NumberFormat from 'react-number-format';
@@ -40,8 +39,9 @@ const FormProductComponent = (props: Props) => {
   const {
     control,
     watch,
-    formState: { errors, dirtyFields },
+    formState: { errors, dirtyFields, isDirty },
     handleSubmit,
+    reset,
   } = useForm<IParamsProduct>({
     mode: 'onTouched',
     reValidateMode: 'onChange',
@@ -56,7 +56,6 @@ const FormProductComponent = (props: Props) => {
   const [vendorOptions, setVendorOptions] = useState<SelectOption[]>([]);
   const [brandOptions, setBrandOptions] = useState<SelectOption[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([]);
-  const [isSale, setIsSale] = useState(false);
 
   const membershipOptions: SelectOption[] = useMemo(() => [{ label: 'General', value: '4' }], []);
   const saleTypeOptions: SelectOption[] = useMemo(
@@ -84,6 +83,7 @@ const FormProductComponent = (props: Props) => {
   const conditionOptions: SelectOption[] = useMemo(() => [{ label: 'Used', value: '292' }], []);
 
   const watchOGTagsType = watch('og_tags_type');
+  const watchParticipateSale = watch('participate_sale');
   const watchMetaDescType = watch('meta_desc_type');
   const watchCondition = watch('condition_id');
 
@@ -101,12 +101,11 @@ const FormProductComponent = (props: Props) => {
       errors.quantity ||
       errors.shipping_to_zones
     ) {
-      console.log('error');
       onSubmitable(false);
       return;
     }
     if (detailForm) {
-      if (Object.keys(dirtyFields).length > 0) {
+      if (isDirty) {
         onSubmitable(true);
       } else {
         onSubmitable(false);
@@ -156,6 +155,7 @@ const FormProductComponent = (props: Props) => {
     dirtyFields.quantity,
     dirtyFields.shipping,
     dirtyFields.shipping_to_zones,
+    isDirty,
     onSubmitable,
   ]);
 
@@ -177,10 +177,6 @@ const FormProductComponent = (props: Props) => {
     setCategoryOptions(categoryList.map((category) => ({ label: category.name, value: category.id })));
   }, [categoryList]);
 
-  useEffect(() => {
-    setIsSale(parseFloat(productInfo.sale_price as string) > 0 ? true : false);
-  }, [productInfo]);
-
   const handleChangeProductInfo = useCallback(
     (productInfo: IParamsProduct) => {
       onSubmit(productInfo);
@@ -196,6 +192,10 @@ const FormProductComponent = (props: Props) => {
       })();
     }
   }, [submitFlag, handleSubmit, handleChangeProductInfo, onSubmitable, setSubmitFlag]);
+
+  useEffect(() => {
+    reset(productInfo); //update new default values
+  }, [productInfo, reset]);
 
   const defaultVendorName = useMemo(() => {
     return detailForm ? vendorList.find((vendor) => vendor.id == productInfo.vendor_id)?.name || '' : '';
@@ -319,7 +319,7 @@ const FormProductComponent = (props: Props) => {
           </InputFormLayout>
           <InputFormLayout title="Available for sale" smTitle>
             <Controller
-              name={'participate_sale'}
+              name={'enabled'}
               control={control}
               render={({ field }) => (
                 <CheckboxSlider
@@ -388,9 +388,20 @@ const FormProductComponent = (props: Props) => {
                     </InputGroup>
                   </div>
                   <div className="flex items-center gap-x-2">
-                    <Checkbox white value={isSale} onChange={setIsSale} /> Sale
+                    <Controller
+                      name={'participate_sale'}
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          white
+                          value={field.value == '1'}
+                          onChange={(changeTo) => field.onChange(changeTo ? '1' : '0')}
+                        />
+                      )}
+                    />
+                    Sale
                   </div>
-                  {isSale && (
+                  {watchParticipateSale == '1' && (
                     <div className="flex">
                       <div className="w-20 rounded border border-[#a16eff]">
                         <Controller
@@ -581,7 +592,7 @@ const FormProductComponent = (props: Props) => {
           </InputFormLayout>
         </div>
       </div>
-      <input type="submit" hidden />
+      {/* <input type="submit" hidden /> */}
     </form>
   );
 };

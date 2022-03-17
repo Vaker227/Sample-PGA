@@ -29,14 +29,6 @@ export function fetchThunk(
 
     const json = await res.json();
 
-    if (res.status === RESPONSE_STATUS_UNAUTHORIZED) {
-      if (auth) {
-        console.log(auth);
-
-      }
-      // dispatch logout, remove access token here.
-    }
-
     return json;
     // throw new Error('Error');
   };

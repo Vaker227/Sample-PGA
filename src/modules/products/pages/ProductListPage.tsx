@@ -80,12 +80,16 @@ const ProductListPage = () => {
         <Button variant="yellow" disabled={!selectedRemovingProducts.length} onClick={() => setShowRemoveModal(true)}>
           {selectedRemovingProducts.length ? 'Remove selected' : 'Save Changes'}
         </Button>
-        <Button disabled={!selectedExportintProducts.length} variant="yellow">
+        <Button
+          disabled={!selectedExportintProducts.length}
+          variant="yellow"
+          onClick={() => dispatch(getErrorToastAction('Export not work yet'))}
+        >
           Export CSV
         </Button>
       </ToolBar>
     ),
-    [selectedRemovingProducts, selectedExportintProducts],
+    [selectedRemovingProducts, selectedExportintProducts, dispatch],
   );
 
   const removeModalElement = useMemo(() => {
@@ -104,7 +108,6 @@ const ProductListPage = () => {
       setSelectedRemovingProducts([]);
       handleForceReload();
     };
-    console.log('rerenderremove');
     return (
       <Backdrop show={showRemoveModal} closeOnBackdrop onClose={() => setShowRemoveModal(false)}>
         <div className="w-96 divide-y divide-secondary rounded border border-secondary bg-primary text-white">

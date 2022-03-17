@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { IImageInfo } from '../../../../models/product';
+import { defaultImage } from '../../../../utils/constants';
 
 interface ImageViewProps {
   imageInfo: IImageInfo;
@@ -16,7 +17,11 @@ const ImageView = (props: ImageViewProps) => {
       >
         <i className="fa-solid fa-xmark text-black hover:text-black/80"></i>
       </div>
-      <img src={imageInfo.url} className="h-full w-full object-fill object-center" />
+      <img
+        src={imageInfo.url}
+        onError={(e) => e.currentTarget.setAttribute('src', defaultImage)}
+        className="h-full w-full bg-default-image object-fill object-center"
+      />
     </div>
   );
 };

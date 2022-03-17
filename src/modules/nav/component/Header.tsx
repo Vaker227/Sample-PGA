@@ -14,10 +14,10 @@ const Header = () => {
 
   // loading bar
   useEffect(() => {
-    setTimeout(() => setProgress(30), 200);
-    setTimeout(() => setProgress(40), 300);
-    setTimeout(() => setProgress(70), 800);
-    setTimeout(() => setProgress(100), 1000);
+    setTimeout(() => setProgress(30), 100);
+    setTimeout(() => setProgress(40), 200);
+    setTimeout(() => setProgress(70), 500);
+    setTimeout(() => setProgress(100), 600);
   }, [location]);
 
   const handleToggleSidebar = () => {
@@ -46,7 +46,7 @@ const Header = () => {
           height={2}
           progress={progress}
           onLoaderFinished={() => setProgress(0)}
-          waitingTime={500}
+          waitingTime={200}
         />
       </div>
     </>

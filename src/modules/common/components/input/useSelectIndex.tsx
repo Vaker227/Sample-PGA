@@ -26,7 +26,7 @@ const useSelectIndex = (index: number, start: number, end: number) => {
     } else if (focusIndex < start) {
       setFocusIndex(start);
     }
-  }, [start, end]);
+  }, [start, end]); /* eslint-disable-line */
   useEffect(() => {
     focusingElement.current && wrapperElement.current?.scrollTo(0, focusingElement.current.offsetTop - 80);
   }, [focusIndex]);

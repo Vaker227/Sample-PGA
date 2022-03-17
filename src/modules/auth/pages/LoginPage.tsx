@@ -33,11 +33,11 @@ const LoginPage = () => {
     Cookies.set(ACCESS_TOKEN_KEY, reponse.user_cookie, { expires: 7 });
     dispatch(setAuthorization(reponse.user_cookie));
     dispatch(setUserInfo(reponse.user));
-    dispatch(push(ROUTES.home));
+    dispatch(push(ROUTES.listProducts));
   };
   return (
     <>
-      {token && <Redirect to={ROUTES.home} />}
+      {token && <Redirect to={ROUTES.listProducts} />}
       <div className="flex h-screen items-center justify-center">
         {loading && <LoadingScreen />}
         <LoginComponent onSubmit={handleSubmit} />

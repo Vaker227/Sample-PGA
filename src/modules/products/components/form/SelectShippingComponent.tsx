@@ -27,7 +27,6 @@ const SelectShippingComponent = (props: Props) => {
   );
 
   const handleChangePrice = (index: number, value: string) => {
-    console.log('change');
     const nextShippings = selectedValues.slice(0);
     const cloneObj = { ...nextShippings[index] };
     cloneObj.price = value;

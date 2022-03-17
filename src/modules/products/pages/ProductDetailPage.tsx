@@ -92,7 +92,6 @@ const ProductCreatePage = () => {
   const handleSubmitForm = useCallback(
     (productInfo: IParamsProduct) => {
       handleUpdateProduct(productInfo);
-      console.log(productInfo);
       setSubmitFlag(false);
     },
     [handleUpdateProduct],

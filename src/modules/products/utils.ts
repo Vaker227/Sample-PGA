@@ -36,7 +36,7 @@ export const preConfigDetailProductObject = (productInfo: IParamsProduct) => {
     Object.keys(tempProductInfo).forEach((key) => tempProductInfo[key as string] = tempProductInfo[key as string] ?? '')
     // image info
     if (tempProductInfo.images && tempProductInfo.images.length > 0) {
-        tempProductInfo.imagesInfo = tempProductInfo.images.map((image) => ({ ...image, url: image.file }));
+        tempProductInfo.imagesInfo = tempProductInfo.images.map((image) => ({ ...image, url: image.thumbs ? image.thumbs[image.thumbs.length - 1 || 0] : '' }));
 
     }
     // categories to type [id,id,...]

@@ -35,9 +35,6 @@ const ToolBar = (props: Props) => {
 
     if (scrollRef && table) {
       scrollRef.addEventListener('scroll', scrollBindingRef2Table);
-      table.onresize = () => {
-        console.log('resize');
-      };
       // table.addEventListener('scroll', scrollBindingTable2Ref);
     }
 

@@ -303,7 +303,7 @@ const FormUserProfileComponent = (props: Props) => {
             />
           </InputFormLayout>
           {detailForm && (
-            <InputFormLayout title="Pending membership" required>
+            <InputFormLayout title="Pending membership">
               {userInfo.pending_membership_id || 'none'}
             </InputFormLayout>
           )}
