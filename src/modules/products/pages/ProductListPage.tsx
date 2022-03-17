@@ -10,7 +10,6 @@ import Backdrop from '../../common/components/Backdrop';
 import Button from '../../common/components/button/Button';
 import ToolBar from '../../common/components/ToolBar';
 import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
-import { getCommonValues } from '../../common/redux/commonSagas';
 import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import ProductFilterComponent from '../components/list/ProductFilterComponent';
@@ -64,10 +63,6 @@ const ProductListPage = () => {
   const handleForceReload = useCallback(() => {
     handleFecth(filterObject);
   }, [filterObject, handleFecth]);
-
-  useEffect(() => {
-    dispatch(getCommonValues.request());
-  }, [dispatch]);
 
   // fetch when click search btn from filter and table settings change
   useEffect(() => {

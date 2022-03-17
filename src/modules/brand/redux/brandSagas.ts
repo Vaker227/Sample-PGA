@@ -15,7 +15,7 @@ export function* fetchBrandListSaga(): any {
     try {
         const response = yield call(CustomFetch, API_PATHS.getBrandList)
         if (response.errors) {
-            yield put(getErrorToastAction(getErrorMessageResponse(response) as string))
+            throw getErrorMessageResponse(response)
             return;
         }
         yield put(setBrandList(response.data || []))

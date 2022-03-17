@@ -1,4 +1,4 @@
-import { all, call, put, select, takeEvery } from "redux-saga/effects";
+import { all, call, put, select, takeLeading } from "redux-saga/effects";
 import { createAsyncAction, getType } from "typesafe-actions";
 import { API_PATHS } from "../../../configs/api";
 import { loadingProcess } from "../../../configs/loadingProcess";
@@ -7,7 +7,7 @@ import { getErrorMessageResponse } from "../../../utils";
 import { fetchBrandListSaga } from "../../brand/redux/brandSagas";
 import { fetchCategoryListSaga } from "../../category/redux/categorySagas";
 import { fetchShippingListSaga } from "../../shipping/redux/shippingSagas";
-import { getErrorToastAction } from "../../toast/utils";
+import { getErrorToastAction, getSuccessToastAction } from "../../toast/utils";
 import { fetchVendorListSaga } from "../../vendor/redux/vendorSagas";
 import { CustomFetch } from "../utils";
 import { setConditions, setCountries, setRoles, turnOffLoadingOverlay, turnOnLoadingOverlay } from "./commonReducer";
@@ -22,7 +22,7 @@ export function* fetchCountriesSaga(): any {
     try {
         const response = yield call(CustomFetch, API_PATHS.getCountries)
         if (response.errors) {
-            yield put(getErrorToastAction(getErrorMessageResponse(response) as string))
+            throw getErrorMessageResponse(response)
             return;
         }
         yield put(setCountries(response.data))
@@ -40,7 +40,7 @@ export function* fetchRolesSaga(): any {
     try {
         const response = yield call(CustomFetch, API_PATHS.getRoles)
         if (response.errors) {
-            yield put(getErrorToastAction(getErrorMessageResponse(response) as string))
+            throw getErrorMessageResponse(response)
             return;
         }
         yield put(setRoles(response.data || []))
@@ -58,7 +58,7 @@ export function* fetchConditionsSaga(): any {
     try {
         const response = yield call(CustomFetch, API_PATHS.getConditions)
         if (response.errors) {
-            yield put(getErrorToastAction(getErrorMessageResponse(response) as string))
+            throw getErrorMessageResponse(response)
             return;
         }
         yield put(setConditions(response.data || []))
@@ -79,20 +79,27 @@ export const getCommonValues = createAsyncAction(
 
 export function* getCommonValuesSaga() {
     yield put(turnOnLoadingOverlay(loadingProcess.FetchCommonValues))
-    yield all([
-        fetchCategoryListSaga(),
-        fetchVendorListSaga(),
-        fetchBrandListSaga(),
-        fetchRolesSaga(),
-        fetchCountriesSaga(),
-        fetchShippingListSaga(),
-        fetchConditionsSaga()
-    ])
+    try {
+        yield all([
+            fetchCategoryListSaga(),
+            fetchVendorListSaga(),
+            fetchBrandListSaga(),
+            fetchRolesSaga(),
+            fetchCountriesSaga(),
+            fetchShippingListSaga(),
+            fetchConditionsSaga()
+        ])
+        yield put(getSuccessToastAction("Loaded common data"))
+    } catch (error) {
+        if (typeof error == 'string') {
+            yield put(getErrorToastAction(error))
+        }
+    }
     yield put(turnOffLoadingOverlay(loadingProcess.FetchCommonValues))
 }
 
 
 export default function* watchCommon() {
-    yield takeEvery(getType(getCommonValues.request), getCommonValuesSaga)
+    yield takeLeading(getType(getCommonValues.request), getCommonValuesSaga)
 }
 

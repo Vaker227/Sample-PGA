@@ -10,7 +10,6 @@ import Backdrop from '../../common/components/Backdrop';
 import Button from '../../common/components/button/Button';
 import ToolBar from '../../common/components/ToolBar';
 import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
-import { getCommonValues } from '../../common/redux/commonSagas';
 import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import UsersTableComponent from '../components/table/UsersTableComponent';
@@ -39,11 +38,6 @@ const UserListPage = () => {
     page: 1,
     tz: 7,
   });
-
-
-  useEffect(() => {
-    dispatch(getCommonValues.request());
-  }, [dispatch]);
 
   const handleFetchUser = useCallback(
     async (filter: IFilterUser) => {

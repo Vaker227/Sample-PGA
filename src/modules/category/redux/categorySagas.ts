@@ -14,7 +14,7 @@ export function* fetchCategoryListSaga(): any {
     try {
         const response = yield call(CustomFetch, API_PATHS.getCategoryList)
         if (response.errors) {
-            yield put(getErrorToastAction(getErrorMessageResponse(response) as string))
+            throw getErrorMessageResponse(response)
             return;
         }
         yield put(setCategoryList(response.data))
