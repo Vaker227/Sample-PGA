@@ -53,6 +53,26 @@ const UserListPage = () => {
     [dispatch],
   );
 
+  const handleSelectRow = useCallback((userId: IUserInfo['profile_id']) => {
+    setSelectedUser((prev) => {
+      const newSelectedUsers = prev.slice();
+      const index = prev.indexOf(userId);
+      if (index < 0) {
+        newSelectedUsers.push(userId);
+      } else {
+        newSelectedUsers.splice(index, 1);
+      }
+      return newSelectedUsers;
+    });
+  }, []);
+
+  const handleSeletAllRows = useCallback(
+    (changeTo: boolean) => {
+      setSelectedUser(changeTo ? userList.map((user) => user.profile_id) : []);
+    },
+    [userList],
+  );
+
   const handleSettingsChange = useCallback((filter: Partial<IFilterUser>) => {
     setFilterObject((prev) => ({ ...prev, ...filter }));
   }, []);
@@ -129,7 +149,8 @@ const UserListPage = () => {
           filter={filterObject}
           selectedUsers={selectedUsers}
           total={recordsTotal}
-          onSelectRow={setSelectedUser}
+          onSelectRow={handleSelectRow}
+          onSelectAllRow={handleSeletAllRows}
           onSettingsChange={handleSettingsChange}
         />
       </div>

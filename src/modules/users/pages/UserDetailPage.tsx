@@ -45,6 +45,10 @@ const UserDetailPage = () => {
     setSubmitable(changeTo);
   }, []);
 
+  const handleChangeSubmitFlag = useCallback((changeTo: boolean) => {
+    setSubmitFlag(changeTo);
+  }, []);
+
   const handleSubmit = useCallback(
     async (userInfo: IParamsUserInfo) => {
       setSubmitFlag(false);
@@ -76,7 +80,7 @@ const UserDetailPage = () => {
             onSubmitable={handleSubmitalbe}
             onSubmit={handleSubmit}
             triggerSubmitFlag={submitFlag}
-            setSubmitFlag={setSubmitFlag}
+            setSubmitFlag={handleChangeSubmitFlag}
             detailForm
           />
         )}

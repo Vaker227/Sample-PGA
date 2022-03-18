@@ -18,7 +18,7 @@ interface Props {
   onSubmitable(changeTo: boolean): void;
   onSubmit?(userInfo: IParamsUserInfo): void;
   triggerSubmitFlag?: boolean;
-  setSubmitFlag?: React.Dispatch<React.SetStateAction<boolean>>;
+  setSubmitFlag?(changeTo: boolean): void;
   detailForm?: boolean;
 }
 
@@ -303,9 +303,7 @@ const FormUserProfileComponent = (props: Props) => {
             />
           </InputFormLayout>
           {detailForm && (
-            <InputFormLayout title="Pending membership">
-              {userInfo.pending_membership_id || 'none'}
-            </InputFormLayout>
+            <InputFormLayout title="Pending membership">{userInfo.pending_membership_id || 'none'}</InputFormLayout>
           )}
           <InputFormLayout title="Rquire to change password on next login">
             <Controller

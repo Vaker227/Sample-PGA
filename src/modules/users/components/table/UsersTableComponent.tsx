@@ -10,44 +10,22 @@ import { turnOffLoadingOverlay } from '../../../common/redux/commonReducer';
 import UserRowComponent from './UserRowComponent';
 
 interface Props {
-  selectedUsers: IUserInfo['profile_id'][];
   total: number;
   filter: IFilterUser;
   onSettingsChange(filterSort: Partial<IFilterUser>): void;
-  onSelectRow: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedUsers: IUserInfo['profile_id'][];
+  onSelectRow(userId: IUserInfo['profile_id']): void;
+  onSelectAllRow(changeTo: boolean): void;
   userList: IUserInfo[];
 }
 
 const UsersTableComponent = (props: Props) => {
-  const { selectedUsers, total, onSettingsChange, filter, onSelectRow, userList } = props;
+  const { selectedUsers, total, onSettingsChange, filter, onSelectRow, onSelectAllRow, userList } = props;
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(turnOffLoadingOverlay(loadingProcess.LoadingUsersList));
   }, [dispatch, userList]);
-
-  const handleSelectRow = useCallback(
-    (userId: IUserInfo['profile_id']) => {
-      onSelectRow((prev) => {
-        const newSelectedUsers = prev.slice();
-        const index = prev.indexOf(userId);
-        if (index < 0) {
-          newSelectedUsers.push(userId);
-        } else {
-          newSelectedUsers.splice(index, 1);
-        }
-        return newSelectedUsers;
-      });
-    },
-    [onSelectRow],
-  );
-
-  const handleSeletAllRows = useCallback(
-    (changeTo: boolean) => {
-      onSelectRow(changeTo ? userList.map((user) => user.profile_id) : []);
-    },
-    [userList, onSelectRow],
-  );
 
   const handleSelectPage = useCallback(
     (number) => {
@@ -78,7 +56,7 @@ const UsersTableComponent = (props: Props) => {
             <th className="min-w-[60px] p-3 ">
               <Checkbox
                 value={userList.length > 0 && selectedUsers.length == userList.length}
-                onChange={handleSeletAllRows}
+                onChange={onSelectAllRow}
               />
             </th>
             <th className="min-w-[100px] p-3 ">
@@ -138,7 +116,7 @@ const UsersTableComponent = (props: Props) => {
               key={user.profile_id}
               user={user}
               selected={selectedUsers.includes(user.profile_id)}
-              onSelect={handleSelectRow}
+              onSelect={onSelectRow}
             />
           ))}
         </tbody>

@@ -123,6 +123,31 @@ const ProductListPage = () => {
     );
   }, [showRemoveModal]); // eslint-disable-line
 
+  const handleSelectRemove = useCallback((productId: IProduct['id']) => {
+    setSelectedRemovingProducts((prev) => {
+      const newArr = prev.slice(0);
+      const index = prev.indexOf(productId);
+      index < 0 ? newArr.push(productId) : newArr.splice(index, 1);
+      return newArr;
+    });
+  }, []);
+
+  const handleSelectExport = useCallback((productId: IProduct['id']) => {
+    setSelectedExportintProducts((prev) => {
+      const newArr = prev.slice(0);
+      const index = prev.indexOf(productId);
+      index < 0 ? newArr.push(productId) : newArr.splice(index, 1);
+      return newArr;
+    });
+  }, []);
+
+  const handleSelectAllExport = useCallback(
+    (changeTo: boolean) => {
+      setSelectedExportintProducts(changeTo ? productList.map((product) => product.id) : []);
+    },
+    [productList],
+  );
+
   return (
     <div className="px-7 pt-8">
       <div className="text-4xl text-white">Products </div>
@@ -134,10 +159,11 @@ const ProductListPage = () => {
           </Button>
         </div>
         <ProductTableComponent
-          onSelectRemove={setSelectedRemovingProducts}
+          onSelectRemove={handleSelectRemove}
           selectedRemovingProducts={selectedRemovingProducts}
-          onSelectExport={setSelectedExportintProducts}
+          onSelectExport={handleSelectExport}
           selectedExportintProducts={selectedExportintProducts}
+          onSelectAllExport={handleSelectAllExport}
           list={productList}
           filter={filterObject}
           total={recordsTotal}
