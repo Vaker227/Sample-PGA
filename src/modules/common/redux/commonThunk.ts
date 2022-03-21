@@ -30,6 +30,5 @@ export function fetchThunk(
     const json = await res.json();
 
     return json;
-    // throw new Error('Error');
   };
 }

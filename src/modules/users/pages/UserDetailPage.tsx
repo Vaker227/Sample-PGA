@@ -12,6 +12,7 @@ import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/
 import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormUserProfileComponent from '../components/FormUserProfileComponent';
+import { getUserDetailValues, getUserDetailValuesSaga } from '../redux/usersSagas';
 import { preConfigDetailUserObject } from '../utils';
 
 const UserDetailPage = () => {
@@ -21,6 +22,10 @@ const UserDetailPage = () => {
   const [submitFlag, setSubmitFlag] = useState(false);
   const params = useParams<{ id: string }>();
   const [userInfo, setUserInfo] = useState<IParamsUserInfo>();
+
+  useEffect(() => {
+    dispatch(getUserDetailValues.request());
+  }, [dispatch]);
 
   useEffect(() => {
     async function fetchUserInfo() {

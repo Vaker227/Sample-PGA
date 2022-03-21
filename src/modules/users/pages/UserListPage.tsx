@@ -1,6 +1,7 @@
+import QueryString from 'query-string';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
 import { ROUTES } from '../../../configs/routes';
@@ -14,29 +15,34 @@ import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import UsersTableComponent from '../components/table/UsersTableComponent';
 import UsersFilterComponent from '../components/UsersFilterComponent';
+import { getUserListValues } from '../redux/usersSagas';
 
 const UserListPage = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [recordsTotal, setRecordsTotal] = useState(0);
   const [selectedUsers, setSelectedUser] = useState<IUserInfo['profile_id'][]>([]);
   const [userList, setUserList] = useState<IUserInfo[]>([]);
-  const [filterObject, setFilterObject] = useState<IFilterUser>({
-    address: '',
-    country: '',
-    date_range: [],
-    date_type: 'R',
-    memberships: [],
-    phone: '',
-    search: '',
-    state: '',
-    status: [],
-    types: [],
-    sort: 'firstName',
-    order_by: 'ASC',
-    count: 25,
-    page: 1,
-    tz: 7,
+  const [filterObject, setFilterObject] = useState<IFilterUser>(() => {
+    const queryObj: Partial<IFilterUser> = QueryString.parse(history.location.search, { arrayFormat: 'bracket' });
+    return {
+      address: queryObj.address ?? '',
+      country: queryObj.country ?? '',
+      date_range: queryObj.date_range ?? [],
+      date_type: queryObj.date_type ?? 'R',
+      memberships: queryObj.memberships ?? [],
+      phone: queryObj.phone ?? '',
+      search: queryObj.search ?? '',
+      state: queryObj.state ?? '',
+      status: queryObj.status ?? [],
+      types: queryObj.types ?? [],
+      sort: queryObj.sort ?? 'firstName',
+      order_by: queryObj.order_by ?? 'ASC',
+      count: queryObj.count ?? 25,
+      page: queryObj.page ?? 1,
+      tz: 7,
+    };
   });
 
   const handleFetchUser = useCallback(
@@ -87,7 +93,14 @@ const UserListPage = () => {
 
   useEffect(() => {
     handleFetchUser(filterObject);
-  }, [filterObject, handleFetchUser]);
+    // store query to url
+    const query = QueryString.stringify(filterObject, { arrayFormat: 'bracket' });
+    history.replace(history.location.pathname + '?' + query);
+  }, [filterObject, handleFetchUser, history]);
+
+  useEffect(() => {
+    dispatch(getUserListValues.request());
+  }, [dispatch]);
 
   const toolBarElement = useMemo(
     () => (

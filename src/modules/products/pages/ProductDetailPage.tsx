@@ -13,6 +13,7 @@ import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/
 import { CustomFetch, CustomFetchFormData } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormProductComponent from '../components/FormProductComponent';
+import { getProductDetailValues } from '../redux/productSagas';
 import { detectImageChange, preConfigDetailProductObject, UploadImageProduct } from '../utils';
 
 const ProductCreatePage = () => {
@@ -22,6 +23,10 @@ const ProductCreatePage = () => {
   const [originalProductInfo, setProductInfo] = useState<IParamsProduct>();
   const [submitable, setSubmitable] = useState(false);
   const [submitFlag, setSubmitFlag] = useState(false);
+
+  useEffect(() => {
+    dispatch(getProductDetailValues.request());
+  }, [dispatch]);
 
   const fetchProductInfo = useCallback(async () => {
     dispatch(turnOnLoadingOverlay(loadingProcess.LoadProduct));

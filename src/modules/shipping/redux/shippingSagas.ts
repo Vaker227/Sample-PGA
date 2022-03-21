@@ -17,7 +17,6 @@ export function* fetchShippingListSaga(): any {
         const response = yield call(CustomFetch, API_PATHS.getShippingList)
         if (response.errors) {
             throw getErrorMessageResponse(response)
-            return;
         }
         yield put(setShippingList(response.data))
 

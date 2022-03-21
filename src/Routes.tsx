@@ -1,27 +1,17 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import { Route, Switch, useLocation } from 'react-router-dom';
 import { ROUTES } from './configs/routes';
 import LoginPage from './modules/auth/pages/LoginPage';
 import ProtectedRoute from './modules/common/components/ProtectedRoute';
-import { getCommonValues } from './modules/common/redux/commonSagas';
 import ProductCreatePage from './modules/products/pages/ProductCreatePage';
 import ProductDetailPage from './modules/products/pages/ProductDetailPage';
 import ProductListPage from './modules/products/pages/ProductListPage';
 import UserCreatePage from './modules/users/pages/UserCreatePage';
 import UserDetailPage from './modules/users/pages/UserDetailPage';
 import UserListPage from './modules/users/pages/UserListPage';
-import { AppState } from './redux/reducer';
 
 export const Routes = () => {
-  const dispatch = useDispatch();
   const location = useLocation();
-  const auth = useSelector<AppState, string | undefined>((state) => state.profile.auth);
-  useEffect(() => {
-    if (auth) {
-      dispatch(getCommonValues.request());
-    }
-  }, [dispatch, auth]);
 
   return (
     <Switch location={location}>

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 import { API_PATHS } from '../../../configs/api';
@@ -11,6 +11,7 @@ import ToolBar from '../../common/components/ToolBar';
 import { CustomFetchFormData } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormProductComponent from '../components/FormProductComponent';
+import { getProductDetailValues } from '../redux/productSagas';
 import { detectImageChange, UploadImageProduct } from '../utils';
 
 const ProductCreatePage = () => {
@@ -56,6 +57,10 @@ const ProductCreatePage = () => {
   );
   const [submitable, setSubmitable] = useState(false);
   const [submitFlag, setSubmitFlag] = useState(false);
+
+  useEffect(() => {
+    dispatch(getProductDetailValues.request());
+  }, [dispatch]);
 
   const handleSetSubmitable = useCallback((changeTo: boolean) => {
     setSubmitable(changeTo);

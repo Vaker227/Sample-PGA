@@ -16,7 +16,6 @@ export function* fetchVendorListSaga(): any {
         const response = yield call(CustomFetch, API_PATHS.getVendorList)
         if (response.errors) {
             throw getErrorMessageResponse(response)
-            return;
         }
         yield put(setVendorList(response.data))
 

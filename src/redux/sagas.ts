@@ -1,9 +1,12 @@
 import { all } from 'redux-saga/effects'
-import watchCommon from '../modules/common/redux/commonSagas'
+import watchProductsValues from '../modules/products/redux/productSagas'
+import watchUsersValues from '../modules/users/redux/usersSagas'
 
 
 export default function* rootSaga() {
     yield all([
-        watchCommon()
+        watchUsersValues(),
+        watchProductsValues()
+
     ])
 }

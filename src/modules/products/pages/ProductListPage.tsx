@@ -1,6 +1,7 @@
+import QueryString from 'query-string';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
 import { ROUTES } from '../../../configs/routes';
@@ -14,26 +15,35 @@ import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import ProductFilterComponent from '../components/list/ProductFilterComponent';
 import ProductTableComponent from '../components/list/ProductTableComponent';
+import { getProductListValues } from '../redux/productSagas';
 
 const ProductListPage = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [productList, setProductList] = useState<IProduct[]>([]);
   const [recordsTotal, setRecordsTotal] = useState(0);
   const [selectedRemovingProducts, setSelectedRemovingProducts] = useState<IProduct['id'][]>([]);
   const [selectedExportintProducts, setSelectedExportintProducts] = useState<IProduct['id'][]>([]);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [filterObject, setFilterObject] = useState<IFilterProduct>({
-    availability: 'all',
-    category: '0',
-    count: 25,
-    order_by: 'ASC',
-    page: 1,
-    search: '',
-    search_type: '',
-    sort: 'name',
-    stock_status: 'all',
-    vendor: '',
+  const [filterObject, setFilterObject] = useState<IFilterProduct>(() => {
+    const queryObj: Partial<IFilterProduct> = QueryString.parse(history.location.search, { arrayFormat: 'bracket' });
+    return {
+      availability: queryObj.availability ?? 'all',
+      category: queryObj.category ?? '0',
+      count: queryObj.count ?? 25,
+      order_by: queryObj.order_by ?? 'ASC',
+      page: queryObj.page ?? 1,
+      search: queryObj.search ?? '',
+      search_type: queryObj.search_type ?? '',
+      sort: queryObj.sort ?? 'name',
+      stock_status: queryObj.stock_status ?? 'all',
+      vendor: queryObj.vendor ?? '',
+    };
   });
+
+  useEffect(() => {
+    dispatch(getProductListValues.request());
+  }, [dispatch]);
 
   const handleFecth = useCallback(
     async (filter: IFilterProduct) => {
@@ -67,7 +77,10 @@ const ProductListPage = () => {
   // fetch when click search btn from filter and table settings change
   useEffect(() => {
     handleFecth(filterObject);
-  }, [filterObject, handleFecth]);
+    // store filter to URL
+    const query = QueryString.stringify(filterObject, { arrayFormat: 'bracket' });
+    history.replace(history.location.pathname + '?' + query);
+  }, [filterObject, handleFecth, history]);
 
   const toolBarElement = useMemo(
     () => (

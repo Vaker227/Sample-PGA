@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 import { API_PATHS } from '../../../configs/api';
@@ -10,12 +10,17 @@ import ToolBar from '../../common/components/ToolBar';
 import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormUserProfileComponent from '../components/FormUserProfileComponent';
+import { getUserDetailValues, getUserDetailValuesSaga } from '../redux/usersSagas';
 
 const UserCreatePage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [submitable, setSubmitable] = useState(false);
   const [submitFlag, setSubmitFlag] = useState(false);
+
+  useEffect(() => {
+    dispatch(getUserDetailValues.request());
+  }, [dispatch]);
 
   const handleCreateUser = useCallback(
     async (userInfo: IParamsUserInfo) => {
