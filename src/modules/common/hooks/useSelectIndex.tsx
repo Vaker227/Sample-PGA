@@ -28,7 +28,8 @@ const useSelectIndex = (index: number, start: number, end: number) => {
     }
   }, [start, end]); /* eslint-disable-line */
   useEffect(() => {
-    focusingElement.current && wrapperElement.current?.scrollTo(0, focusingElement.current.offsetTop - 80);
+    // focusingElement.current && wrapperElement.current?.scrollTo(0, focusingElement.current.offsetTop - 80);
+    focusingElement.current && focusingElement.current.scrollIntoView({ block: 'nearest' });
   }, [focusIndex]);
 
   return { focusingElement, wrapperElement, focusIndex, setFocusIndex, handleSelectByKeyBoard };

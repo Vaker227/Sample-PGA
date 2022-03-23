@@ -18,7 +18,9 @@ const Layout = (props: Props) => {
         <Header />
         <Sidebar />
         {!!loading.length && <LoadingScreen />}
-        <div className="ml-16 flex-1 overflow-auto bg-[#1B1B38] lg:ml-0">{props.children}</div>
+        <div id="scrollable-container" className="ml-16 flex-1 overflow-auto bg-[#1B1B38] lg:ml-0">
+          {props.children}
+        </div>
       </div>
     </>
   );

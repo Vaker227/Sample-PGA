@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SelectOption } from '../../../../models/utils/input';
-import useSelectIndex from './useSelectIndex';
+import useSelectIndex from '../../hooks/useSelectIndex';
 
 interface Props {
   list: SelectOption[];

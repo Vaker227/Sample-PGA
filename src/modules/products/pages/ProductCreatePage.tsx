@@ -8,6 +8,7 @@ import { IParamsProduct } from '../../../models/product';
 import BackButton from '../../common/components/button/BackButton';
 import Button from '../../common/components/button/Button';
 import ToolBar from '../../common/components/ToolBar';
+import useScrollToTop from '../../common/hooks/useScrollToTop';
 import { CustomFetchFormData } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormProductComponent from '../components/FormProductComponent';
@@ -17,6 +18,8 @@ import { detectImageChange, UploadImageProduct } from '../utils';
 const ProductCreatePage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const { containerRef } = useScrollToTop();
+
   const defaultProductCreateInfo: IParamsProduct = useMemo(
     () => ({
       vendor_id: '',
@@ -107,7 +110,7 @@ const ProductCreatePage = () => {
   );
 
   return (
-    <div className="space-y-4 pt-10  text-white">
+    <div ref={containerRef} className="space-y-4 pt-10  text-white">
       <div className="mx-10">
         <BackButton onClick={() => history.goBack()} />
       </div>

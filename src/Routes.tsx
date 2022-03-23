@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router';
 import { Route, Switch, useLocation } from 'react-router-dom';
 import { ROUTES } from './configs/routes';
 import LoginPage from './modules/auth/pages/LoginPage';
@@ -22,7 +23,7 @@ export const Routes = () => {
       <ProtectedRoute path={ROUTES.listProducts} component={ProductListPage} />
       <ProtectedRoute path={ROUTES.createProduct} component={ProductCreatePage} />
       <ProtectedRoute path={ROUTES.detailProduct + '/:id'} component={ProductDetailPage} />
-      <ProtectedRoute path={'/'} component={ProductListPage} />
+      <ProtectedRoute path={'/'} render={() => <Redirect to={ROUTES.listProducts} />} />
     </Switch>
   );
 };

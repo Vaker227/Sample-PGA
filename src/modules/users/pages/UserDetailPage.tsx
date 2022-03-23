@@ -8,16 +8,18 @@ import { IParamsUserInfo } from '../../../models/user';
 import BackButton from '../../common/components/button/BackButton';
 import Button from '../../common/components/button/Button';
 import ToolBar from '../../common/components/ToolBar';
+import useScrollToTop from '../../common/hooks/useScrollToTop';
 import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
 import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import FormUserProfileComponent from '../components/FormUserProfileComponent';
-import { getUserDetailValues, getUserDetailValuesSaga } from '../redux/usersSagas';
+import { getUserDetailValues } from '../redux/usersSagas';
 import { preConfigDetailUserObject } from '../utils';
 
 const UserDetailPage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const { containerRef } = useScrollToTop();
   const [submitable, setSubmitable] = useState(false);
   const [submitFlag, setSubmitFlag] = useState(false);
   const params = useParams<{ id: string }>();
@@ -73,7 +75,7 @@ const UserDetailPage = () => {
   );
 
   return (
-    <div className="space-y-4 pt-10 text-white">
+    <div ref={containerRef} className="space-y-4 pt-10 text-white">
       <div className="mx-10">
         <BackButton onClick={() => history.goBack()} />
       </div>

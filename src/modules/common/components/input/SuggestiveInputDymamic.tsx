@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SelectOption } from '../../../../models/utils/input';
+import useSelectIndex from '../../hooks/useSelectIndex';
 
 interface Props {
   list: SelectOption[];
@@ -17,6 +18,8 @@ const SuggestiveInput = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [inputDebounce, setInputDebounce] = useState<NodeJS.Timeout>();
+
+  const { focusingElement, wrapperElement, focusIndex, handleSelectByKeyBoard } = useSelectIndex(0, 0, list.length - 1);
 
   useEffect(() => {
     if (searching) {
@@ -39,13 +42,16 @@ const SuggestiveInput = (props: Props) => {
       if (inputDebounce) clearTimeout(inputDebounce);
       setInputDebounce(
         setTimeout(() => {
-          if (pattern == '') return;
+          if (pattern == '') {
+            onSelect('');
+            return;
+          }
           setSearching(true);
           onChangeText(pattern);
         }, 1000),
       );
     },
-    [onChangeText, inputDebounce],
+    [onChangeText, inputDebounce, onSelect],
   );
 
   const handleSelect = useCallback(
@@ -56,6 +62,12 @@ const SuggestiveInput = (props: Props) => {
     },
     [onSelect],
   );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (expand) {
+      handleSelectByKeyBoard(e);
+    }
+  };
 
   const handleBlur = useCallback(() => {
     onSelect('');
@@ -77,17 +89,24 @@ const SuggestiveInput = (props: Props) => {
         type="text"
         value={text}
         onChange={handleChangeText}
+        onKeyDown={handleKeyDown}
       />
       {loading && (
         <div className="absolute right-3 top-2 h-7 w-7 animate-spin rounded-full border-2 border-white border-t-transparent "></div>
       )}
       {expand && (
-        <div className={`absolute z-50 max-h-72 max-w-sm overflow-auto border border-secondary bg-primary`}>
-          {list.map((option: SelectOption) => {
+        <div
+          ref={wrapperElement}
+          className={`absolute z-50 max-h-72 max-w-sm overflow-auto border border-secondary bg-primary`}
+        >
+          {list.map((option: SelectOption, index) => {
             return (
               <div
                 key={option.value}
-                className={`cursor-pointer px-4 py-2 transition hover:bg-slate-100/50 `}
+                ref={focusIndex == index ? focusingElement : undefined}
+                className={`cursor-pointer px-4 py-2 transition hover:bg-slate-100/50 ${
+                  focusIndex == index && 'bg-slate-100/50'
+                }`}
                 onClick={() => handleSelect(option)}
               >
                 {option.label}

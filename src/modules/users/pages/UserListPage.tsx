@@ -1,29 +1,30 @@
 import QueryString from 'query-string';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
 import { ROUTES } from '../../../configs/routes';
 import { IFilterUser, IUserInfo } from '../../../models/user';
+import { AppState } from '../../../redux/reducer';
 import { getErrorMessageResponse } from '../../../utils';
 import Backdrop from '../../common/components/Backdrop';
 import Button from '../../common/components/button/Button';
 import ToolBar from '../../common/components/ToolBar';
-import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
+import { clearScrollPosition, turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
 import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import UsersTableComponent from '../components/table/UsersTableComponent';
 import UsersFilterComponent from '../components/UsersFilterComponent';
+import useUserList from '../hooks/useUserList';
 import { getUserListValues } from '../redux/usersSagas';
 
 const UserListPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const scroll = useSelector<AppState, number | undefined>((state) => state.common.scrollPositions[ROUTES.listUsers]);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [recordsTotal, setRecordsTotal] = useState(0);
   const [selectedUsers, setSelectedUser] = useState<IUserInfo['profile_id'][]>([]);
-  const [userList, setUserList] = useState<IUserInfo[]>([]);
   const [filterObject, setFilterObject] = useState<IFilterUser>(() => {
     const queryObj: Partial<IFilterUser> = QueryString.parse(history.location.search, { arrayFormat: 'bracket' });
     return {
@@ -44,20 +45,15 @@ const UserListPage = () => {
       tz: 7,
     };
   });
+  const { userList, recordsTotal, forceRevalidate, isLoading } = useUserList(filterObject);
 
-  const handleFetchUser = useCallback(
-    async (filter: IFilterUser) => {
+  useEffect(() => {
+    if (userList) {
+      dispatch(turnOffLoadingOverlay(loadingProcess.LoadingUsersList));
+    } else {
       dispatch(turnOnLoadingOverlay(loadingProcess.LoadingUsersList));
-      const response = await CustomFetch(API_PATHS.getUserList, 'post', filter);
-      if (response.errors) {
-        dispatch(turnOffLoadingOverlay(loadingProcess.LoadingUsersList));
-        return;
-      }
-      setRecordsTotal(response.recordsTotal);
-      setUserList(response.data);
-    },
-    [dispatch],
-  );
+    }
+  }, [userList, dispatch]);
 
   const handleSelectRow = useCallback((userId: IUserInfo['profile_id']) => {
     setSelectedUser((prev) => {
@@ -92,15 +88,23 @@ const UserListPage = () => {
   );
 
   useEffect(() => {
-    handleFetchUser(filterObject);
-    // store query to url
-    const query = QueryString.stringify(filterObject, { arrayFormat: 'bracket' });
-    history.replace(history.location.pathname + '?' + query);
-  }, [filterObject, handleFetchUser, history]);
-
-  useEffect(() => {
     dispatch(getUserListValues.request());
   }, [dispatch]);
+
+  // scroll
+  useLayoutEffect(() => {
+    if (scroll && history.action === 'POP') {
+      document.getElementById('scrollable-container')?.scrollTo(0, scroll);
+    }
+    dispatch(clearScrollPosition());
+  }, [scroll, dispatch, history]);
+
+  // store query to url
+  useEffect(() => {
+    const query = QueryString.stringify(filterObject, { arrayFormat: 'bracket' });
+    history.replace(history.location.pathname + '?' + query);
+    setSelectedUser([]);
+  }, [filterObject, history]);
 
   const toolBarElement = useMemo(
     () => (
@@ -127,7 +131,7 @@ const UserListPage = () => {
         dispatch(getSuccessToastAction('Delete success'));
       }
       setSelectedUser([]);
-      handleFetchUser(filterObject);
+      forceRevalidate();
     };
     return (
       <Backdrop show={showRemoveModal} closeOnBackdrop onClose={() => setShowRemoveModal(false)}>
@@ -146,6 +150,10 @@ const UserListPage = () => {
       </Backdrop>
     );
   }, [showRemoveModal]); // eslint-disable-line
+
+  if (isLoading) {
+    return <div>Loading....</div>;
+  }
 
   return (
     <div className="px-7 pt-8">

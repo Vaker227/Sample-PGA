@@ -10,7 +10,7 @@ import { IProduct } from '../../../../models/product';
 import Backdrop from '../../../common/components/Backdrop';
 import Button from '../../../common/components/button/Button';
 import Checkbox from '../../../common/components/input/Checkbox';
-import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../../common/redux/commonReducer';
+import { storeScrollPosition, turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../../common/redux/commonReducer';
 import { CustomFetch } from '../../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../../toast/utils';
 import PowerChecbox from '../PowerChecbox';
@@ -25,8 +25,8 @@ interface Props {
 }
 
 const ProductRowComponent = (props: Props) => {
-  const { product, onSelectRemove, selectedRemoving, onSelectExport, selectedExporting, forceReload } = props;
   const dispatch = useDispatch();
+  const { product, onSelectRemove, selectedRemoving, onSelectExport, selectedExporting, forceReload } = props;
   const [showUpdataModal, setShowUpdateModal] = useState(false);
   const handleUpdate = async () => {
     setShowUpdateModal(false);
@@ -42,6 +42,15 @@ const ProductRowComponent = (props: Props) => {
     dispatch(getSuccessToastAction('Update product success'));
     forceReload();
   };
+
+  const handleRestroScroll = () => {
+    dispatch(
+      storeScrollPosition({
+        page: ROUTES.listProducts,
+        scroll: document.getElementById('scrollable-container')?.scrollTop || 0,
+      }),
+    );
+  };
   return (
     <>
       <tr className={`${selectedRemoving && 'opacity-70'}`}>
@@ -56,12 +65,20 @@ const ProductRowComponent = (props: Props) => {
           </div>
         </td>
         <td className="truncate p-3 text-left">
-          <Link className="text-sky-500 hover:underline" to={ROUTES.detailProduct + '/' + product.id}>
+          <Link
+            onClick={handleRestroScroll}
+            className="text-sky-500 hover:underline"
+            to={ROUTES.detailProduct + '/' + product.id}
+          >
             {product.sku}
           </Link>
         </td>
         <td className="truncate p-3 text-left">
-          <Link className="text-sky-500 hover:underline" to={ROUTES.detailProduct + '/' + product.id}>
+          <Link
+            onClick={handleRestroScroll}
+            className="text-sky-500 hover:underline"
+            to={ROUTES.detailProduct + '/' + product.id}
+          >
             {product.name}
           </Link>
         </td>

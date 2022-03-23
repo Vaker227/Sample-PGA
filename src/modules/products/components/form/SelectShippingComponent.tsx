@@ -95,7 +95,7 @@ const SelectShippingComponent = (props: Props) => {
       })}
       <InputFormLayout smTitle title="" lg>
         <div className="flex gap-x-3">
-          <div className="w-1/2">
+          <div className="w-1/3">
             <SelectionComponent
               title="Select new zone"
               list={shippingOptions}
@@ -103,7 +103,7 @@ const SelectShippingComponent = (props: Props) => {
               onChange={setSelectingShipping}
             />
           </div>
-          <div className="w-1/2">
+          <div className="w-2/3">
             <Button disabled={selectingShipping == ''} onClick={handleAddLocation}>
               Add Shipping Location
             </Button>

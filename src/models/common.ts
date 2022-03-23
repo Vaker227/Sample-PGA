@@ -30,3 +30,12 @@ export interface ICountry {
     id: string
     is_fraudlent: string
 }
+
+
+export interface IScrollInfo {
+    page: string,
+    scroll: number
+}
+export interface IScrollPositions {
+    [key: string]: number
+}

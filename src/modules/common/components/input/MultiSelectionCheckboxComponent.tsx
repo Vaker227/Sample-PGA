@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { SelectOption } from '../../../../models/utils/input';
+import useSelectIndex from '../../hooks/useSelectIndex';
 import Checkbox from './Checkbox';
-import useSelectIndex from './useSelectIndex';
 
 interface CheckboxSelectionProps {
   option: SelectOption;
@@ -22,7 +22,9 @@ const CheckboxSelection = React.forwardRef<HTMLDivElement, CheckboxSelectionProp
   return (
     <div
       ref={ref}
-      className={`${focus && 'bg-slate-100/50'} flex items-center px-4 py-2 transition hover:bg-slate-100/50 `}
+      className={`${
+        focus && 'bg-slate-100/50'
+      } flex cursor-pointer items-center px-4 py-2 transition hover:bg-slate-100/50 `}
       onClick={handleChange}
     >
       <Checkbox value={selected} />
@@ -98,12 +100,8 @@ function MultiSelectionCheckboxComponent(props: Props) {
     return rows;
   };
   return (
-    <div
-      className="relative w-full cursor-pointer select-none font-semibold text-white"
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-    >
-      {expand && <div className="fixed top-0 left-0 h-screen w-screen" onClick={handleBlur}></div>}
+    <div className="relative w-full select-none font-semibold text-white" tabIndex={0} onKeyDown={handleKeyDown}>
+      {expand && <div className="fixed top-0 left-0 z-10 h-screen w-screen" onClick={handleBlur}></div>}
       <div
         className={
           'flex items-center gap-x-2 rounded border py-2 px-4 shadow' +

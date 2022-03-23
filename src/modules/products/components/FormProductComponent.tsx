@@ -492,6 +492,8 @@ const FormProductComponent = (props: Props) => {
           )}
         </div>
       </div>
+      <div className="h-5 bg-primary"></div>
+
       <div className="bg-pry h-5"></div>
       <div className="mx-10 my-6">
         <div className="text-2xl">Marketing</div>

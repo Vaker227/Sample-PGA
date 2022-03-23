@@ -1,27 +1,30 @@
 import QueryString from 'query-string';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
 import { ROUTES } from '../../../configs/routes';
 import { IFilterProduct, IProduct } from '../../../models/product';
+import { AppState } from '../../../redux/reducer';
 import { getErrorMessageResponse } from '../../../utils';
 import Backdrop from '../../common/components/Backdrop';
 import Button from '../../common/components/button/Button';
 import ToolBar from '../../common/components/ToolBar';
-import { turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
+import { clearScrollPosition, turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
 import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import ProductFilterComponent from '../components/list/ProductFilterComponent';
 import ProductTableComponent from '../components/list/ProductTableComponent';
+import useProductList from '../hooks/useProductList';
 import { getProductListValues } from '../redux/productSagas';
 
 const ProductListPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [productList, setProductList] = useState<IProduct[]>([]);
-  const [recordsTotal, setRecordsTotal] = useState(0);
+  const scroll = useSelector<AppState, number | undefined>(
+    (state) => state.common.scrollPositions[ROUTES.listProducts],
+  );
   const [selectedRemovingProducts, setSelectedRemovingProducts] = useState<IProduct['id'][]>([]);
   const [selectedExportintProducts, setSelectedExportintProducts] = useState<IProduct['id'][]>([]);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
@@ -41,23 +44,11 @@ const ProductListPage = () => {
     };
   });
 
+  const { recordsTotal, forceRevalidate, productList } = useProductList(filterObject);
+
   useEffect(() => {
     dispatch(getProductListValues.request());
   }, [dispatch]);
-
-  const handleFecth = useCallback(
-    async (filter: IFilterProduct) => {
-      dispatch(turnOnLoadingOverlay(loadingProcess.LoadingProductList));
-      const response = await CustomFetch(API_PATHS.getProductList, 'post', filter);
-      if (response.errors) {
-        dispatch(turnOffLoadingOverlay(loadingProcess.LoadingProductList));
-        return;
-      }
-      setProductList(response.data || []);
-      setRecordsTotal(response.recordsTotal);
-    },
-    [dispatch],
-  );
 
   const handleSearch = useCallback((filter: IFilterProduct) => {
     setFilterObject((prev) => ({ ...prev, ...filter }));
@@ -69,18 +60,21 @@ const ProductListPage = () => {
     });
   }, []);
 
-  // force reload when update product
-  const handleForceReload = useCallback(() => {
-    handleFecth(filterObject);
-  }, [filterObject, handleFecth]);
+  // scroll
+  useLayoutEffect(() => {
+    if (scroll && history.action === 'POP') {
+      document.getElementById('scrollable-container')?.scrollTo(0, scroll);
+    }
+    dispatch(clearScrollPosition());
+  }, [scroll, dispatch, history]);
 
-  // fetch when click search btn from filter and table settings change
   useEffect(() => {
-    handleFecth(filterObject);
     // store filter to URL
     const query = QueryString.stringify(filterObject, { arrayFormat: 'bracket' });
     history.replace(history.location.pathname + '?' + query);
-  }, [filterObject, handleFecth, history]);
+    setSelectedExportintProducts([]);
+    setSelectedRemovingProducts([]);
+  }, [filterObject, history]);
 
   const toolBarElement = useMemo(
     () => (
@@ -114,7 +108,7 @@ const ProductListPage = () => {
         dispatch(getSuccessToastAction('Delete success'));
       }
       setSelectedRemovingProducts([]);
-      handleForceReload();
+      forceRevalidate();
     };
     return (
       <Backdrop show={showRemoveModal} closeOnBackdrop onClose={() => setShowRemoveModal(false)}>
@@ -171,18 +165,20 @@ const ProductListPage = () => {
             <Link to={ROUTES.createProduct}>Add Product</Link>
           </Button>
         </div>
-        <ProductTableComponent
-          onSelectRemove={handleSelectRemove}
-          selectedRemovingProducts={selectedRemovingProducts}
-          onSelectExport={handleSelectExport}
-          selectedExportintProducts={selectedExportintProducts}
-          onSelectAllExport={handleSelectAllExport}
-          list={productList}
-          filter={filterObject}
-          total={recordsTotal}
-          onSettingsChange={handleSettingsChange}
-          forceReload={handleForceReload}
-        />
+        {productList && (
+          <ProductTableComponent
+            onSelectRemove={handleSelectRemove}
+            selectedRemovingProducts={selectedRemovingProducts}
+            onSelectExport={handleSelectExport}
+            selectedExportintProducts={selectedExportintProducts}
+            onSelectAllExport={handleSelectAllExport}
+            list={productList}
+            filter={filterObject}
+            total={recordsTotal}
+            onSettingsChange={handleSettingsChange}
+            forceReload={forceRevalidate}
+          />
+        )}
       </div>
       {toolBarElement}
       {removeModalElement}
