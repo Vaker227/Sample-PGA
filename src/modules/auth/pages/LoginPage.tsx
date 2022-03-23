@@ -1,6 +1,6 @@
 import { push } from 'connected-react-router';
 import Cookies from 'js-cookie';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect } from 'react-router';
@@ -17,7 +17,7 @@ import LoginComponent from '../components/LoginComponent';
 import { setAuthorization, setUserInfo } from '../redux/authReducer';
 
 const LoginPage = () => {
-  const token = useSelector<AppState>((state) => state.profile.auth);
+  const token = useMemo(() => Cookies.get(ACCESS_TOKEN_KEY), []);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const handleSubmit: SubmitHandler<ILoginParams> = async (data) => {
