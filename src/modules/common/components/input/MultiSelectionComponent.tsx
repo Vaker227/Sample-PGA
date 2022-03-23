@@ -58,9 +58,13 @@ function MultiSelectionComponent(props: MultiSelectionProps) {
     onBlur && onBlur();
   }, [onBlur]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    handleSelectByKeyBoard(e);
-  }, []); // eslint-disable-line
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      handleSelectByKeyBoard(e);
+    },
+    [handleSelectByKeyBoard],
+  );
+
   const handleSelect = (selection: SelectOption) => {
     onChange([...selectedValues, selection.value]);
     inputRef.current?.focus();

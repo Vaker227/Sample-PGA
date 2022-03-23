@@ -1,6 +1,7 @@
 import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { API_PATHS } from '../../../configs/api';
 import { ICountry, IRole } from '../../../models/common';
 import { IFilterUser, IFilterUserMembership, IUserStatus } from '../../../models/user';
 import { SelectOption } from '../../../models/utils/input';
@@ -11,6 +12,7 @@ import InputComponent from '../../common/components/input/InputComponent';
 import MultiSelectionCheckboxComponent from '../../common/components/input/MultiSelectionCheckboxComponent';
 import PickDateComponent from '../../common/components/input/PickDateComponent';
 import SelectionComponent from '../../common/components/input/SelectionComponent';
+import { CustomFetch } from '../../common/utils';
 
 interface Props {
   filterObject: IFilterUser;
@@ -20,12 +22,31 @@ interface Props {
 const UsersFilterComponent = (props: Props) => {
   const { filterObject, onSearch } = props;
   const [filterProperties, setFilterProperties] = useState<IFilterUser>(filterObject);
+  const [states, setStates] = useState<string[]>([]);
   const roles = useSelector<AppState, { [index: string]: IRole[] }>((state) => state.common.roles);
   const countries = useSelector<AppState, ICountry[]>((state) => state.common.countries);
 
   useEffect(() => {
     setFilterProperties(filterObject);
   }, [filterObject]);
+
+  useEffect(() => {
+    async function fetchStates() {
+      const response = await CustomFetch(API_PATHS.getStates, 'post', { code: filterProperties.country });
+      if (response.errors) {
+        return;
+      }
+      if (response.data) {
+        setStates(response.data.map((value: any) => value.state));
+      }
+    }
+    if (filterProperties.country) {
+      fetchStates();
+    } else {
+      setStates([]);
+    }
+    setFilterProperties((prev) => ({ ...prev, state: '' }));
+  }, [filterProperties.country]);
 
   const roleOptions = useMemo(() => {
     const options: SelectOption[] = [];
@@ -44,6 +65,11 @@ const UsersFilterComponent = (props: Props) => {
   const countryOptions: SelectOption[] = useMemo(
     () => countries.map((country) => ({ label: country.country, value: country.code })),
     [countries],
+  );
+
+  const statesOptions: SelectOption[] = useMemo(
+    () => states.map((state) => ({ label: state, value: state })) || [],
+    [states],
   );
 
   const membershipOptions: SelectOption[] = useMemo(
@@ -108,6 +134,13 @@ const UsersFilterComponent = (props: Props) => {
     },
     [setFilterProperties],
   );
+  const handleSelectState = useCallback(
+    (state: string) => {
+      setFilterProperties((prev) => ({ ...prev, state }));
+    },
+    [setFilterProperties],
+  );
+
   const handleChangeAddress = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setFilterProperties((prev) => ({ ...prev, address: e.target.value }));
@@ -194,7 +227,16 @@ const UsersFilterComponent = (props: Props) => {
                 <div className="flex items-center justify-between">
                   <div className="w-20 shrink-0 text-sm text-white">State</div>
                   <div className="shrink-0 grow md:w-52">
-                    <InputComponent value={filterProperties.state} onChange={handleChangeState} />
+                    {statesOptions.length ? (
+                      <SelectionComponent
+                        title=""
+                        list={statesOptions}
+                        onChange={handleSelectState}
+                        selectedValue={filterProperties.state}
+                      />
+                    ) : (
+                      <InputComponent value={filterProperties.state} onChange={handleChangeState} />
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center justify-between">

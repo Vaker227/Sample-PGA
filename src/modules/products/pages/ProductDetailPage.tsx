@@ -114,7 +114,7 @@ const ProductCreatePage = () => {
       <div className="mx-10">
         <BackButton onClick={() => history.goBack()} />
       </div>
-      <div className="mx-10 text-3xl font-semibold">Product Detail</div>
+      <div className="mx-10 text-3xl font-semibold">{originalProductInfo?.name || 'Product Detail'}</div>
       <div className="min-h-screen">
         {originalProductInfo && (
           <FormProductComponent

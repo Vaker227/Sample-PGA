@@ -31,7 +31,6 @@ const UserCreatePage = () => {
         dispatch(getErrorToastAction(response.errors));
         return;
       }
-      dispatch(getSuccessToastAction('Created user'));
       history.push(ROUTES.detailUser + '/' + response.data.info.profile_id);
     },
     [dispatch, history],

@@ -25,6 +25,7 @@ export const API_PATHS = {
   getVendorList: getBaseUrl(APIService.admin) + "/vendors/list",
   getRoles: getBaseUrl(APIService.admin) + "/commons/role",
   getCountries: getBaseUrl(APIService.admin) + "/commons/country",
+  getStates: getBaseUrl(APIService.admin) + "/commons/state",
   getUserList: getBaseUrl(APIService.admin) + "/users/list",
   getProfileDetail: getBaseUrl(APIService.vendor) + "/profile/detail",
   editUser: getBaseUrl(APIService.admin) + "/users/edit",

@@ -65,7 +65,7 @@ export interface IFilterUserSort {
 }
 export interface IFilterUser extends IFilterUserProperties, IFilterUserSort {
   [key: string]: any
-  tz: 7
+  tz: number
 }
 
 

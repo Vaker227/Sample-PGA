@@ -54,7 +54,7 @@ const ProductRowComponent = (props: Props) => {
   return (
     <>
       <tr className={`${selectedRemoving && 'opacity-70'}`}>
-        <td className="x truncate p-3 ">
+        <td className=" p-3 ">
           <div className="flex divide-x border-r border-dashed py-2">
             <div className="pr-2">
               <Checkbox value={selectedExporting} onChange={() => onSelectExport(product.id)} />
@@ -64,7 +64,7 @@ const ProductRowComponent = (props: Props) => {
             </div>
           </div>
         </td>
-        <td className="truncate p-3 text-left">
+        <td className=" p-3 text-left">
           <Link
             onClick={handleRestroScroll}
             className="text-sky-500 hover:underline"
@@ -73,26 +73,20 @@ const ProductRowComponent = (props: Props) => {
             {product.sku}
           </Link>
         </td>
-        <td className="truncate p-3 text-left">
-          <Link
-            onClick={handleRestroScroll}
-            className="text-sky-500 hover:underline"
-            to={ROUTES.detailProduct + '/' + product.id}
-          >
+        <td className="max-w-xs truncate p-3 text-left text-sky-500">
+          <Link onClick={handleRestroScroll} className="hover:underline " to={ROUTES.detailProduct + '/' + product.id}>
             {product.name}
           </Link>
         </td>
-        <td className="truncate p-3 text-left">{product.category}</td>
-        <td className="truncate p-3 text-left">
+        <td className=" p-3 text-left">{product.category}</td>
+        <td className=" p-3 text-left">
           <FormattedNumber value={product.price as number} style="currency" currency="USD" />
         </td>
-        <td className="truncate p-3 text-left">{product.amount}</td>
-        <td className="truncate p-3 text-left">
-          <div className="max-w-[200px] truncate">{product.vendor}</div>
+        <td className=" p-3 text-left">{product.amount}</td>
+        <td className=" p-3 text-left">
+          <div className="max-w-[200px] ">{product.vendor}</div>
         </td>
-        <td className="truncate p-3 text-left">
-          {moment(parseInt(product.arrivalDate) * 1000).format('MMM DD, YYYY')}
-        </td>
+        <td className=" p-3 text-left">{moment(parseInt(product.arrivalDate) * 1000).format('MMM DD, YYYY')}</td>
         <td className="p-3">
           <div className="border-l border-dashed pl-4">
             <Button variant="purple" onClick={() => onSelectRemove(product.id)}>

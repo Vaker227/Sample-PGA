@@ -79,7 +79,7 @@ const UserDetailPage = () => {
       <div className="mx-10">
         <BackButton onClick={() => history.goBack()} />
       </div>
-      <div className="mx-10 text-3xl font-semibold">Detail Profile</div>
+      <div className="mx-10 text-3xl font-semibold">{userInfo?.email || 'Detail Profile'}</div>
       <div className="min-h-screen">
         {userInfo && (
           <FormUserProfileComponent

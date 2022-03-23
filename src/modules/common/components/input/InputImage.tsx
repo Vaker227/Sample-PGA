@@ -84,6 +84,7 @@ const InputImage = (props: Props) => {
       const imageLocalLink = URL.createObjectURL(file);
       const name = file.name;
       onChange([...images, { id: 'new', file: name, url: imageLocalLink }]);
+      setDragging(false);
     },
     [images, onChange],
   );

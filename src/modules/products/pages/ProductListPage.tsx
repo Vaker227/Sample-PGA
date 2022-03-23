@@ -1,7 +1,7 @@
 import QueryString from 'query-string';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
 import { ROUTES } from '../../../configs/routes';
@@ -22,6 +22,7 @@ import { getProductListValues } from '../redux/productSagas';
 const ProductListPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
   const scroll = useSelector<AppState, number | undefined>(
     (state) => state.common.scrollPositions[ROUTES.listProducts],
   );
@@ -30,18 +31,19 @@ const ProductListPage = () => {
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [filterObject, setFilterObject] = useState<IFilterProduct>(() => {
     const queryObj: Partial<IFilterProduct> = QueryString.parse(history.location.search, { arrayFormat: 'bracket' });
-    return {
-      availability: queryObj.availability ?? 'all',
-      category: queryObj.category ?? '0',
-      count: queryObj.count ?? 25,
-      order_by: queryObj.order_by ?? 'ASC',
-      page: queryObj.page ?? 1,
-      search: queryObj.search ?? '',
-      search_type: queryObj.search_type ?? '',
-      sort: queryObj.sort ?? 'name',
-      stock_status: queryObj.stock_status ?? 'all',
-      vendor: queryObj.vendor ?? '',
+    const defaultObj: IFilterProduct = {
+      availability: 'all',
+      category: '0',
+      count: 25,
+      order_by: 'ASC',
+      page: 1,
+      search: '',
+      search_type: '',
+      sort: 'name',
+      stock_status: 'all',
+      vendor: '',
     };
+    return { ...defaultObj, ...queryObj };
   });
 
   const { recordsTotal, forceRevalidate, productList } = useProductList(filterObject);
@@ -62,11 +64,32 @@ const ProductListPage = () => {
 
   // scroll
   useLayoutEffect(() => {
+    // only persist scroll when back from detail
     if (scroll && history.action === 'POP') {
       document.getElementById('scrollable-container')?.scrollTo(0, scroll);
+    } else if (history.action !== 'REPLACE') {
+      document.getElementById('scrollable-container')?.scrollTo(0, 0);
     }
     dispatch(clearScrollPosition());
   }, [scroll, dispatch, history]);
+
+  // trigger when query empty
+  useEffect(() => {
+    if (location.search == '') {
+      setFilterObject({
+        availability: 'all',
+        category: '0',
+        count: 25,
+        order_by: 'ASC',
+        page: 1,
+        search: '',
+        search_type: '',
+        sort: 'name',
+        stock_status: 'all',
+        vendor: '',
+      });
+    }
+  }, [location]);
 
   useEffect(() => {
     // store filter to URL
@@ -161,24 +184,22 @@ const ProductListPage = () => {
       <div>
         <ProductFilterComponent filterObject={filterObject} onSearch={handleSearch} />
         <div className="my-8">
-          <Button variant="purple">
-            <Link to={ROUTES.createProduct}>Add Product</Link>
-          </Button>
+          <Link to={ROUTES.createProduct}>
+            <Button variant="purple">Add Product</Button>
+          </Link>
         </div>
-        {productList && (
-          <ProductTableComponent
-            onSelectRemove={handleSelectRemove}
-            selectedRemovingProducts={selectedRemovingProducts}
-            onSelectExport={handleSelectExport}
-            selectedExportintProducts={selectedExportintProducts}
-            onSelectAllExport={handleSelectAllExport}
-            list={productList}
-            filter={filterObject}
-            total={recordsTotal}
-            onSettingsChange={handleSettingsChange}
-            forceReload={forceRevalidate}
-          />
-        )}
+        <ProductTableComponent
+          onSelectRemove={handleSelectRemove}
+          selectedRemovingProducts={selectedRemovingProducts}
+          onSelectExport={handleSelectExport}
+          selectedExportintProducts={selectedExportintProducts}
+          onSelectAllExport={handleSelectAllExport}
+          list={productList || []}
+          filter={filterObject}
+          total={recordsTotal}
+          onSettingsChange={handleSettingsChange}
+          forceReload={forceRevalidate}
+        />
       </div>
       {toolBarElement}
       {removeModalElement}

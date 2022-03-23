@@ -1,7 +1,7 @@
 import QueryString from 'query-string';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { API_PATHS } from '../../../configs/api';
 import { loadingProcess } from '../../../configs/loadingProcess';
 import { ROUTES } from '../../../configs/routes';
@@ -11,7 +11,12 @@ import { getErrorMessageResponse } from '../../../utils';
 import Backdrop from '../../common/components/Backdrop';
 import Button from '../../common/components/button/Button';
 import ToolBar from '../../common/components/ToolBar';
-import { clearScrollPosition, turnOffLoadingOverlay, turnOnLoadingOverlay } from '../../common/redux/commonReducer';
+import {
+  clearScrollPosition,
+  turnOffLoadingOverlay,
+  turnOnLoadingOverlay,
+  storeScrollPosition,
+} from '../../common/redux/commonReducer';
 import { CustomFetch } from '../../common/utils';
 import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
 import UsersTableComponent from '../components/table/UsersTableComponent';
@@ -22,28 +27,30 @@ import { getUserListValues } from '../redux/usersSagas';
 const UserListPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
   const scroll = useSelector<AppState, number | undefined>((state) => state.common.scrollPositions[ROUTES.listUsers]);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [selectedUsers, setSelectedUser] = useState<IUserInfo['profile_id'][]>([]);
   const [filterObject, setFilterObject] = useState<IFilterUser>(() => {
     const queryObj: Partial<IFilterUser> = QueryString.parse(history.location.search, { arrayFormat: 'bracket' });
-    return {
-      address: queryObj.address ?? '',
-      country: queryObj.country ?? '',
-      date_range: queryObj.date_range ?? [],
-      date_type: queryObj.date_type ?? 'R',
-      memberships: queryObj.memberships ?? [],
-      phone: queryObj.phone ?? '',
-      search: queryObj.search ?? '',
-      state: queryObj.state ?? '',
-      status: queryObj.status ?? [],
-      types: queryObj.types ?? [],
-      sort: queryObj.sort ?? 'firstName',
-      order_by: queryObj.order_by ?? 'ASC',
-      count: queryObj.count ?? 25,
-      page: queryObj.page ?? 1,
+    const defaultObj: IFilterUser = {
+      address: '',
+      country: '',
+      date_range: [],
+      date_type: 'R',
+      memberships: [],
+      phone: '',
+      search: '',
+      state: '',
+      status: [],
+      types: [],
+      sort: 'firstName',
+      order_by: 'ASC',
+      count: 25,
+      page: 1,
       tz: 7,
     };
+    return { ...defaultObj, ...queryObj };
   });
   const { userList, recordsTotal, forceRevalidate, isLoading } = useUserList(filterObject);
 
@@ -93,11 +100,37 @@ const UserListPage = () => {
 
   // scroll
   useLayoutEffect(() => {
+    // only persist scroll when back from detail
     if (scroll && history.action === 'POP') {
       document.getElementById('scrollable-container')?.scrollTo(0, scroll);
+    } else if (history.action !== 'REPLACE') {
+      document.getElementById('scrollable-container')?.scrollTo(0, 0);
     }
     dispatch(clearScrollPosition());
   }, [scroll, dispatch, history]);
+
+  // trigger when query empty
+  useEffect(() => {
+    if (location.search == '') {
+      setFilterObject({
+        address: '',
+        country: '',
+        date_range: [],
+        date_type: 'R',
+        memberships: [],
+        phone: '',
+        search: '',
+        state: '',
+        status: [],
+        types: [],
+        sort: 'firstName',
+        order_by: 'ASC',
+        count: 25,
+        page: 1,
+        tz: 7,
+      });
+    }
+  }, [location]);
 
   // store query to url
   useEffect(() => {
@@ -161,12 +194,12 @@ const UserListPage = () => {
       <div>
         <UsersFilterComponent filterObject={filterObject} onSearch={handleOnSearch} />
         <div className="my-8">
-          <Button variant="purple">
-            <Link to={ROUTES.createUser}>Add User</Link>
-          </Button>
+          <Link to={ROUTES.createUser}>
+            <Button variant="purple">Add User</Button>
+          </Link>
         </div>
         <UsersTableComponent
-          userList={userList}
+          userList={userList || []}
           filter={filterObject}
           selectedUsers={selectedUsers}
           total={recordsTotal}

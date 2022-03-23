@@ -149,7 +149,7 @@ const FormUserProfileComponent = (props: Props) => {
               )}
             />
           </InputFormLayout>
-          <InputFormLayout title="First name" required error={errors.lastName?.message}>
+          <InputFormLayout title="Last name" required error={errors.lastName?.message}>
             <Controller
               name="lastName"
               rules={{ required: 'Last Name is required' }}

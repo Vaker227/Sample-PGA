@@ -41,6 +41,7 @@ const FormProductComponent = (props: Props) => {
     watch,
     formState: { errors, dirtyFields, isDirty },
     handleSubmit,
+    getValues,
     reset,
   } = useForm<IParamsProduct>({
     mode: 'onTouched',
@@ -84,6 +85,7 @@ const FormProductComponent = (props: Props) => {
 
   const watchOGTagsType = watch('og_tags_type');
   const watchParticipateSale = watch('participate_sale');
+  const watchSalePriceType = watch('sale_price_type');
   const watchMetaDescType = watch('meta_desc_type');
   const watchCondition = watch('condition_id');
 
@@ -98,6 +100,7 @@ const FormProductComponent = (props: Props) => {
       errors.categories ||
       errors.description ||
       errors.price ||
+      errors.sale_price ||
       errors.quantity ||
       errors.shipping_to_zones
     ) {
@@ -141,6 +144,7 @@ const FormProductComponent = (props: Props) => {
     errors.categories,
     errors.description,
     errors.price,
+    errors.sale_price,
     errors.quantity,
     errors.shipping,
     errors.shipping_to_zones,
@@ -201,6 +205,7 @@ const FormProductComponent = (props: Props) => {
     return detailForm ? vendorList.find((vendor) => vendor.id == productInfo.vendor_id)?.name || '' : '';
   }, [detailForm, vendorList, productInfo.vendor_id]);
 
+  console.log(errors);
   return (
     <form onSubmit={handleSubmit(handleChangeProductInfo)}>
       <div className="mx-10">
@@ -314,7 +319,9 @@ const FormProductComponent = (props: Props) => {
               name={'description'}
               control={control}
               rules={{ required: 'Description is required' }}
-              render={({ field }) => <TextEditorComponent text={field.value} onChange={field.onChange} />}
+              render={({ field }) => (
+                <TextEditorComponent text={field.value} onBlur={field.onBlur} onChange={field.onChange} />
+              )}
             />
           </InputFormLayout>
           <InputFormLayout title="Available for sale" smTitle>
@@ -368,7 +375,13 @@ const FormProductComponent = (props: Props) => {
               )}
             />
           </InputFormLayout>
-          <InputFormLayout title="Price" required smTitle lg error={errors.price?.message}>
+          <InputFormLayout
+            title="Price"
+            required
+            smTitle
+            lg
+            error={errors.price?.message || errors.sale_price?.message}
+          >
             <Controller
               name={'price'}
               control={control}
@@ -421,10 +434,17 @@ const FormProductComponent = (props: Props) => {
                         <Controller
                           name={'sale_price'}
                           control={control}
+                          rules={{
+                            validate: (value) => {
+                              if (getValues('sale_price_type') == '$') {
+                                return getValues('price') > value || 'Sale price exceed net price';
+                              }
+                              return value < 100 || 'Sale price exceed 100%';
+                            },
+                          }}
                           render={({ field }) => (
                             <NumberFormat
                               customInput={InputComponent}
-                              decimalScale={2}
                               value={field.value}
                               onBlur={field.onBlur}
                               onChange={field.onChange}

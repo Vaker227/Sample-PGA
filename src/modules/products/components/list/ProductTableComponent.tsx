@@ -66,7 +66,10 @@ const ProductTableComponent = (props: Props) => {
         <thead>
           <tr className="border-b border-b-secondary text-left">
             <th className="flex min-w-[100px] p-3">
-              <Checkbox value={selectedExportintProducts.length == list.length} onChange={onSelectAllExport} />
+              <Checkbox
+                value={selectedExportintProducts.length == list.length && list.length != 0}
+                onChange={onSelectAllExport}
+              />
             </th>
             <th className="min-w-[100px] p-3 ">
               <TableHeadSort label="SKU" type="sku" orderBy={filter.order_by} sort={filter.sort} onClick={handleSort} />

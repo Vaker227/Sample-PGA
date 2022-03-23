@@ -10,7 +10,7 @@ import Button from '../../common/components/button/Button';
 import ToolBar from '../../common/components/ToolBar';
 import useScrollToTop from '../../common/hooks/useScrollToTop';
 import { CustomFetchFormData } from '../../common/utils';
-import { getErrorToastAction, getSuccessToastAction } from '../../toast/utils';
+import { getErrorToastAction } from '../../toast/utils';
 import FormProductComponent from '../components/FormProductComponent';
 import { getProductDetailValues } from '../redux/productSagas';
 import { detectImageChange, UploadImageProduct } from '../utils';
@@ -82,7 +82,6 @@ const ProductCreatePage = () => {
         dispatch(getErrorToastAction(response.errors || 'Something wrong'));
         return;
       }
-      dispatch(getSuccessToastAction('Create product success! ID: ' + response.data));
 
       // upload image
       const productId = response.data;
@@ -92,7 +91,6 @@ const ProductCreatePage = () => {
       });
       try {
         await Promise.all(uploadProcess);
-        dispatch(getSuccessToastAction('Uploaded images'));
         history.push(ROUTES.detailProduct + '/' + productId);
       } catch (error: any) {
         if (typeof error == 'string') dispatch(getErrorToastAction(error));
