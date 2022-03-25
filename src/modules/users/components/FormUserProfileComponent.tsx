@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { IRoleWrapper } from '../../../models/common';
 import { IParamsUserInfo } from '../../../models/user';
 import { SelectOption } from '../../../models/utils/input';
@@ -12,6 +12,7 @@ import InputFormLayout from '../../common/components/input/InputFormLayout';
 import MultiSelectionCheckboxComponent from '../../common/components/input/MultiSelectionCheckboxComponent';
 import SelectionComponent from '../../common/components/input/SelectionComponent';
 import TextareaComponent from '../../common/components/input/TextareaComponent';
+import { getErrorToastAction } from '../../toast/utils';
 
 interface Props {
   userInfo: IParamsUserInfo;
@@ -24,6 +25,7 @@ interface Props {
 
 const FormUserProfileComponent = (props: Props) => {
   const { userInfo, onSubmitable, onSubmit, triggerSubmitFlag, detailForm, setSubmitFlag } = props;
+  const dispatch = useDispatch();
   const roles = useSelector<AppState, IRoleWrapper>((state) => state.common.roles);
   const {
     watch,
@@ -128,14 +130,29 @@ const FormUserProfileComponent = (props: Props) => {
 
   const handleChangeUserInfo = useCallback((data) => onSubmit && onSubmit(data), [onSubmit]);
 
+  const handleTriggerUpdate = useCallback(
+    (e?: React.FormEvent<HTMLFormElement>) => {
+      e?.preventDefault();
+      return handleSubmit(handleChangeUserInfo, (errors) => {
+        const errorKeys = Object.keys(errors);
+        if (errorKeys.length) {
+          dispatch(getErrorToastAction(errors[errorKeys[0]].message));
+        }
+        onSubmitable(false);
+        setSubmitFlag && setSubmitFlag(false);
+      })();
+    },
+    [handleSubmit, handleChangeUserInfo, onSubmitable, setSubmitFlag, dispatch],
+  );
+
   useEffect(() => {
     if (triggerSubmitFlag) {
-      handleSubmit(handleChangeUserInfo, () => setSubmitFlag && setSubmitFlag(false))();
+      handleTriggerUpdate();
     }
-  }, [triggerSubmitFlag, handleChangeUserInfo, handleSubmit, setSubmitFlag]);
+  }, [triggerSubmitFlag, handleTriggerUpdate]);
 
   return (
-    <form onSubmit={handleSubmit(handleChangeUserInfo)}>
+    <form onSubmit={handleTriggerUpdate}>
       <div className="mx-10 ">
         <div className="text-xl">Email & password</div>
         <div className="space-y-3 pt-4 pb-10 ">

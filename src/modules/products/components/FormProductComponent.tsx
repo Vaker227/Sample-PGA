@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import NumberFormat from 'react-number-format';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { IBrand } from '../../../models/brand';
 import { ICategory } from '../../../models/category';
 import { IParamsProduct } from '../../../models/product';
@@ -23,6 +23,7 @@ import SuggestiveInputDynamic from '../../common/components/input/SuggestiveInpu
 import SuggestiveInputStatic from '../../common/components/input/SuggestiveInputStatic';
 import TextareaComponent from '../../common/components/input/TextareaComponent';
 import TextEditorComponent from '../../common/components/input/TextEditorComponent';
+import { getErrorToastAction } from '../../toast/utils';
 import SelectShippingComponent from './form/SelectShippingComponent';
 
 interface Props {
@@ -36,6 +37,7 @@ interface Props {
 
 const FormProductComponent = (props: Props) => {
   const { detailForm, submitFlag, onSubmit, productInfo, onSubmitable, setSubmitFlag } = props;
+  const dispatch = useDispatch();
   const {
     control,
     watch,
@@ -85,7 +87,6 @@ const FormProductComponent = (props: Props) => {
 
   const watchOGTagsType = watch('og_tags_type');
   const watchParticipateSale = watch('participate_sale');
-  const watchSalePriceType = watch('sale_price_type');
   const watchMetaDescType = watch('meta_desc_type');
   const watchCondition = watch('condition_id');
 
@@ -188,14 +189,27 @@ const FormProductComponent = (props: Props) => {
     [onSubmit],
   );
 
-  useEffect(() => {
-    if (submitFlag) {
-      handleSubmit(handleChangeProductInfo, () => {
+  const handleTriggerUpdate = useCallback(
+    (e?: React.FormEvent<HTMLFormElement>) => {
+      e?.preventDefault();
+      return handleSubmit(handleChangeProductInfo, (errors) => {
+        const errorKeys = Object.keys(errors);
+        if (errorKeys.length) {
+          dispatch(getErrorToastAction(errors[errorKeys[0]].message));
+        }
         onSubmitable(false);
         setSubmitFlag && setSubmitFlag(false);
       })();
+    },
+    [handleSubmit, handleChangeProductInfo, onSubmitable, setSubmitFlag, dispatch],
+  );
+
+  // when user trigger button update
+  useEffect(() => {
+    if (submitFlag) {
+      handleTriggerUpdate();
     }
-  }, [submitFlag, handleSubmit, handleChangeProductInfo, onSubmitable, setSubmitFlag]);
+  }, [submitFlag, handleTriggerUpdate]);
 
   useEffect(() => {
     reset(productInfo); //update new default values
@@ -205,9 +219,10 @@ const FormProductComponent = (props: Props) => {
     return detailForm ? vendorList.find((vendor) => vendor.id == productInfo.vendor_id)?.name || '' : '';
   }, [detailForm, vendorList, productInfo.vendor_id]);
 
-  console.log(errors);
   return (
-    <form onSubmit={handleSubmit(handleChangeProductInfo)}>
+    <form onSubmit={handleTriggerUpdate}>
+      <input type="submit" hidden />
+
       <div className="mx-10">
         <div className="space-y-6 pt-4 pb-10">
           <InputFormLayout title="Vendor" required smTitle error={errors.vendor_id?.message}>
@@ -614,7 +629,6 @@ const FormProductComponent = (props: Props) => {
           </InputFormLayout>
         </div>
       </div>
-      {/* <input type="submit" hidden /> */}
     </form>
   );
 };
